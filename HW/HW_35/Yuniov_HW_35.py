@@ -18,8 +18,3 @@ def get_response(url):
 url = input("Введите адрес сайта: ")
 
 get_response(url)
-
-if response:
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Text: {response.text}")
-    print(f"Response Headers: {response.headers}")
