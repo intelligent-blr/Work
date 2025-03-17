@@ -35,9 +35,9 @@ logging.basicConfig(filename='log.txt', level=logging.INFO, encoding='utf-8')
 
 
 def log_args(func):
-    def wrapper(*args, **kwargs):
-        logging.info(f'Аргументы: {args}, {kwargs}')
-        result = func(*args, **kwargs)
+    def wrapper(*args):
+        logging.info(f'Аргументы: {args}')
+        result = func(*args)
         logging.info(f'Результат: {result}')
         return result
     return wrapper
