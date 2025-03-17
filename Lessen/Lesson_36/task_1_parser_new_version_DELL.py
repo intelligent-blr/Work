@@ -16,7 +16,7 @@ def get_page(url):
         soup = bs4.BeautifulSoup(response.text, 'lxml')
         yield soup
         url = get_next_page(soup)
-        # print(url)
+        print(url)
 
 
 def get_next_page(soup: bs4.BeautifulSoup) -> str:
@@ -32,7 +32,7 @@ def get_post_data(post) -> dict | None:
             'url': post.select_one('a[data-qa="serp-item__title"]')["href"],
             # 'salary': {'min': None, 'max': None, 'salary': None, 'currency': None},
             'salary': salary.text if salary else None,
-            'tags': [i.text for i in post.select('div[class^="wide-container"] div[class^="magritte-tag"] span[data-qa^="vacancy"]')],
+            'tags': [i.text for i in post.select('div div[class^="wide-container"] div[class^="magritte-tag"] span')],
             'company': {
                 'name': post.select_one('div[class^="company-name-badges-container"] a[data-qa^="vacancy-serp__vacancy-employer"]').text,
                 'url': BASE_URL + post.select_one('div[class^="company-name-badges-container"] a[data-qa^="vacancy-serp__vacancy-employer"]')['href'],
