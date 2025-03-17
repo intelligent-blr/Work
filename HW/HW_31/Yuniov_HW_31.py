@@ -1,3 +1,5 @@
+import logging
+
 # 1. Напишите декоратор validate_args, который будет проверять типы аргументов
 # функции и выводить сообщение об ошибке, если переданы аргументы неправильного
 # типа. Декоратор должен принимать ожидаемые типы аргументов в качестве
@@ -28,3 +30,22 @@ example_function(11, "Hello")
 # результаты вызовов функции в лог-файл. Каждый вызов функции должен быть
 # записан на новой строке в формате "Аргументы: <аргументы>,
 # Результат: <результат>". Используйте модуль logging для записи в лог-файл.
+
+logging.basicConfig(filename='log.txt', level=logging.INFO, encoding='utf-8')
+
+
+def log_args(func):
+    def wrapper(*args, **kwargs):
+        logging.info(f'Аргументы: {args}, {kwargs}')
+        result = func(*args, **kwargs)
+        logging.info(f'Результат: {result}')
+        return result
+    return wrapper
+
+
+@log_args
+def add(a, b):
+    return a + b
+
+
+add(4, 3)
