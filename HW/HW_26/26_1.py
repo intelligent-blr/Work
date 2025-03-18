@@ -18,7 +18,6 @@ def main():
 
     args = parser.parse_args()
 
-
     numbers = range(1, args.number + 1)
     if args.reverse:
         numbers = reversed(numbers)
