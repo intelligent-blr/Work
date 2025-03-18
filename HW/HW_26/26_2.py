@@ -13,8 +13,6 @@ import argparse
 # Читает source.txt, преобразует символы в верхний регистр, сохраняет в dest.txt
 
 
-import argparse
-
 def filecopy(input_file, output_file, uppercase=False):
     try:
         with open(input_file, 'r', encoding='utf-8') as in_file:
