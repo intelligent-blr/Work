@@ -16,7 +16,7 @@ def get_links(url):
         print(i["href"])
 
 
-address=input("Введите адрес страницы: ")
+address = input("Введите адрес страницы: ")
 
 get_links(address)
 
@@ -26,7 +26,7 @@ get_links(address)
 # уровня(теги h1, h2, h3 и т.д.) с их текстом.
 
 
-def get_headers(url,level):
+def get_headers(url, level):
     html = requests.get("https://"+url).text
     soup = BeautifulSoup(html, "html.parser")
     headers = soup.find_all("h"+level)
@@ -34,7 +34,7 @@ def get_headers(url,level):
         print(i)
 
 
-address=input("Введите адрес страницы: ")
-level=input("Введите уровень заголовка: ")
+address = input("Введите адрес страницы: ")
+level = input("Введите уровень заголовка: ")
 
-get_headers(address,level)
+get_headers(address, level)
