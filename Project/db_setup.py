@@ -15,56 +15,54 @@ def get_connection(db_name=None, read_db=False):
         return None
 
 #######################################################
+# Проверка
 # conn = get_connection()
 # conn = get_connection(read_db=True)
 # cursor = conn.cursor()
 # cursor.close()
 # conn.close()
-########################################################
+#######################################################
 
-# def database_is_exists(db_name, read_db=False):
-#     try:
-#         conn_params = dbconfig_read.copy() if read_db else dbconfig_edit.copy()
 
-#         conn_params.pop(None)
-#         connection = mysql.connector.connect(**conn_params)
+def database_is_exists(db_name, read_db=False):
+    conn = get_connection(db_name=None, read_db=read_db)
 
-#         if connection.is_connected():
-#             print("Подключение успешно!")
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SHOW DATABASES;")
+            databases = [db[0] for db in cursor.fetchall()]
+            print(databases)
 
-#             cursor = connection.cursor()
-#             cursor.execute("SHOW DATABASES;")
+            if db_name in databases:
+                # print(f"База данных '{db_name}' существует")
+                return True
+            else:
+                # print(f"База данных '{db_name}' не существует")
+                return False
 
-#             databases = [db[0] for db in cursor.fetchall()]
-#             if db_name in databases:
-#                 print(f"База данных '{db_name}' существует")
-#                 return True
-#             else:
-#                 print(f"База данных '{db_name}' не найдена")
-#                 return False
+        except mysql.connector.Error as err:
+            print(f"Ошибка при выполнении запроса: {err}")
+            return False
 
-#         else:
-#             print("Не удалось подключиться к серверу MySQL")
-#             return False
+        finally:
+            cursor.close()
+            conn.close()
 
-#     except mysql.connector.Error as err:
-#         print(f"Ошибка подключения к базе данных: {err}")
-#         return False
+    else:
+        print("Не удалось подключиться к серверу MySQL")
+        return False
 
-#     finally:
-#         # Закрываем соединение и курсор
-#         if connection and connection.is_connected():
-#             cursor.close()
-#             connection.close()
 
-# # Пример использования
-# db_name = "ich"
+#######################################################
+# Проверка
+# db_name = "Search_queries"
 # exists = database_is_exists(db_name, read_db=True)
 # if exists:
-#     print(f"База данных '{db_name}' доступна для использования.")
+#     print(f"База данных '{db_name}' доступна для использования")
 # else:
-#     print(f"База данных '{db_name}' не существует.")
-
+#     print(f"База данных '{db_name}' не существует")
+#######################################################
 
 
 
