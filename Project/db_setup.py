@@ -2,13 +2,14 @@ import mysql.connector
 from config import dbconfig_edit, dbconfig_read
 
 
-def get_connection(db_name=None, read_db=False):
+def get_connection(db_name=None, read_db=False): # готово
     try:
         conn_params = dbconfig_read.copy() if read_db else dbconfig_edit.copy()
         if db_name:
             conn_params['database'] = db_name
-        print(
-            f"Подключение к базе данных: {conn_params.get('database', 'ich')}")
+        print(f"Подключение к базе данных: "
+              f"{conn_params.get('database', 'по умолчанию')}, "
+              f"status: {'read' if read_db else 'edit'}")
         return mysql.connector.connect(**conn_params)
 
     except mysql.connector.Error as err:
@@ -25,7 +26,7 @@ def get_connection(db_name=None, read_db=False):
 #######################################################
 
 
-def database_is_exists(db_name, read_db=False):
+def database_is_exists(db_name, read_db=False): # готово
     conn = get_connection(db_name=None, read_db=read_db)
 
     if conn:
@@ -66,7 +67,7 @@ def database_is_exists(db_name, read_db=False):
 #######################################################
 
 
-def create_database():
+def create_database(): # готово
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -110,7 +111,10 @@ def create_database():
             print("Соединение с MySQL закрыто")
 
 
-create_database()
+if __name__ == '__main__':
+    create_database()
+    get_connection()
+    # get_connection(read_db=True)
 
 # def insert_users(login, first_name, last_name, email):
 #     connection_edit = get_connection_edit()
@@ -140,6 +144,3 @@ create_database()
 # email = 'google@gmail.com'
 
 # insert_users(login, first_name, last_name, email)
-# # if __name__ == '__main__':
-# #     create_database()
-# #     create_tables()
