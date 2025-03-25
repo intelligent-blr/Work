@@ -54,7 +54,6 @@ def main():
 
         # Получение документов
         if conn := get_connection("sakila"):
-
             documents = fetch_table_rows(conn, "film")
             conn.close()
         else:
@@ -66,6 +65,14 @@ def main():
         for document_id, relevance in find_documents(documents, stop_words, query):
             print(f"Номер документа id = {document_id} | релевантность документа = {relevance}")
 
+    elif action == "2":
+        # Логика для получения статистики
+        print("Получаем статистику...")
+    elif action == "3":
+        # Логика для изменения данных пользователя
+        print("Изменяем ваши данные...")
+    else:
+        print("Неверный выбор действия.")
 
             # insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
 
