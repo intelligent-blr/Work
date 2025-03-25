@@ -2,7 +2,7 @@ import mysql.connector
 from config import dbconfig_edit, dbconfig_read
 
 
-def get_connection(db_name=None, read_db=False): # готово
+def get_connection(db_name=None, read_db=False):  # готово
     try:
         conn_params = dbconfig_read.copy() if read_db else dbconfig_edit.copy()
         if db_name:
@@ -16,17 +16,8 @@ def get_connection(db_name=None, read_db=False): # готово
         print(f"Ошибка подключения к базе данных: {err}")
         return None
 
-#######################################################
-# Проверка
-# conn = get_connection()
-# conn = get_connection(read_db=True)
-# cursor = conn.cursor()
-# cursor.close()
-# conn.close()
-#######################################################
 
-
-def database_is_exists(db_name, read_db=False): # готово
+def database_is_exists(db_name, read_db=False):  # готово
     conn = get_connection(db_name=None, read_db=read_db)
 
     if conn:
@@ -34,7 +25,7 @@ def database_is_exists(db_name, read_db=False): # готово
             cursor = conn.cursor()
             cursor.execute("SHOW DATABASES;")
             databases = [db[0] for db in cursor.fetchall()]
-            print(databases)
+            # print(databases)
 
             if db_name in databases:
                 # print(f"База данных '{db_name}' существует")
@@ -56,18 +47,7 @@ def database_is_exists(db_name, read_db=False): # готово
         return False
 
 
-#######################################################
-# Проверка
-# db_name = "Search_queries"
-# exists = database_is_exists(db_name, read_db=True)
-# if exists:
-#     print(f"База данных '{db_name}' доступна для использования")
-# else:
-#     print(f"База данных '{db_name}' не существует")
-#######################################################
-
-
-def create_database(): # готово
+def create_database():  # готово
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -112,35 +92,22 @@ def create_database(): # готово
 
 
 if __name__ == '__main__':
-    create_database()
-    get_connection()
+    # get_connection()
     # get_connection(read_db=True)
-
-# def insert_users(login, first_name, last_name, email):
-#     connection_edit = get_connection_edit()
-#     cursor = connection_edit.cursor()
-#     cursor.execute("USE Yuniou_300924")
-#     insert_query = """
-#         INSERT INTO users (login, first_name, last_name, email)
-#         VALUES (%s, %s, %s, %s)
-#     """
-
-#     try:
-#         cursor.execute(insert_query, (login, first_name, last_name, email))
-#         connection_edit.commit()
-#         print("Пользователь успешно добавлен")
-#     except mysql.connector.Error as err:
-#         print(f"Ошибка: {err}")
-#     finally:
-#         cursor.close()
-#         connection_edit.close()
+    # create_database()
 
 
-# create_tables()
+# Проверка
+# conn = get_connection()
+# conn = get_connection(read_db=True)
+# cursor = conn.cursor()
+# cursor.close()
+# conn.close()
 
-# login = 'Alex_777'
-# first_name = 'Alex'
-# last_name = 'Petrov'
-# email = 'google@gmail.com'
 
-# insert_users(login, first_name, last_name, email)
+    db_name = "Yuniou_300924"
+    exists = database_is_exists(db_name, read_db=False) # read_db=True
+    if exists:
+        print(f"База данных '{db_name}' доступна для использования")
+    else:
+        print(f"База данных '{db_name}' не существует")
