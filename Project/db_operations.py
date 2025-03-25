@@ -1,11 +1,32 @@
 from db_setup import get_connection
 
 
-# def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
-#     # таблица film и забираем film_id, title, description, release_year, special_features
-#     # film_id, "title + description + special_features"
-#     # [(178, set("title + description + special_features")), (179, set("title + description + special_features"))]
-#     return "Список докxументов"
+def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
+    query = """
+            SELECT film_id, title, description, release_year, special_features
+            FROM film
+            """
+
+    cursor = conn.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+
+    if not rows:  # Check if no rows were fetched
+        print("По Вашему запросу ничего не найдено")
+        return []
+
+    result = []
+    for row in rows:
+        film_id = row[0]
+        release_year = row[3]
+        combined_text = " ".join([str(row[1]), str(row[2]), str(row[4])])
+        word_set = set(combined_text.split())
+        result.append((film_id, word_set, release_year))
+    return result
+
+
+result = fetch_table_rows(get_connection("sakila"), "film")
+print("Найдено", result)
 
 
 # def get_all_users_statistics() -> str:

@@ -3,24 +3,25 @@ from db_operations import (
     add_user_to_database,
     user_exists_in_database,
     fetch_user_info,
-    fetch_user_email)
+    fetch_user_email,
     # get_user_statistics,
     # change_user_information,
-    # fetch_table_rows)
+    fetch_table_rows)
 
 from db_setup import create_database, database_is_exists, get_connection
 
-# from search_enginee import (
-#     parse_stop_words,
-#     find_documents
-# )
+from search_enginee import (
+    parse_stop_words,
+    find_documents
+)
 
 
 def main():
     if not database_is_exists("Yuniou_300924"):
         create_database()
 
-    login = input("Для входа в систему введите Ваш логин: ")
+    # login = input("Для входа в систему введите Ваш логин: ")
+    login = "Alex_888"
     if user_exists_in_database(login):
         login_data = fetch_user_info(login)
         print(f"Рады Вас снова видеть {login_data['first_name']} "
@@ -36,7 +37,7 @@ def main():
                 print("Этот email уже существует")
                 choice = input("Хотите ввести другой email? (да/нет): ").strip().lower()
                 if choice != "да":
-                    print("К сожалению, вы не зарегистрированы.")
+                    print("К сожалению, вы не зарегистрированы")
                     return
             except ValueError:
                 break
@@ -44,28 +45,30 @@ def main():
         add_user_to_database(login, first_name, last_name, email)
         print("Вы успешно зарегистрированы!")
 
-    # action = input(
-    #     "Выберите доступное действие: 1 - Найти фильм, 2 - Получить статистику, 3 - Изменить свои данные\n")
+    action = input("Выберите доступное действие:\n1 - Найти фильм\n"
+                   "2 - Получить статистику\n3 - Изменить свои данные\n")
 
-    # if action == "1":
-    #     # Парсинг стоп слов
-    #     str stop_words_string = input("Введите строку стоп слов: ")
-    #     # "быть смотреть а по с в на...".split()
-    #     set[str] stop_words = parse_stop_words(stop_words_string)
+    if action == "1":
+        stop_words_input = input("Введите строку стоп слов: ")
+        stop_words = parse_stop_words(stop_words_input)
 
-    #     # Получение документов
-    #     if conn := get_connection("sakila"):
-    #         list[tuple[int, set[str]]] documents = fetch_table_rows(conn, table_name)
-    #         conn.close()
-    #     else:
-    #         print("Не удалось подключиться к базе данных.")
+        # Получение документов
+        if conn := get_connection("sakila"):
 
-    #     # Отпарвка поискового запроса
-    #     str query = input("Введите строку запрос: ")
-    #     for document_id, relevance in find_documents(documents, stop_words, query):
-    #         print(
-    #             f"Номер документа id = {document_id} | релевантность документа = {relevance}")
-    #         # insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
+            documents = fetch_table_rows(conn, "film")
+            conn.close()
+        else:
+            print("Не удалось подключиться к базе данных.")
+            return
+
+        # Отпарвка поискового запроса
+        query = input("Введите строку запроса: ")
+        for document_id, relevance in find_documents(documents, stop_words, query):
+            print(f"Номер документа id = {document_id} | релевантность документа = {relevance}")
+
+
+            # insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
+
     # elif action == "2":
     #     stat_action = input(
     #         "1 - Статистика по всем пользователям, 2 - Статистика по вам\n")
