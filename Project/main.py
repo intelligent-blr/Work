@@ -7,7 +7,7 @@ from db_operations import (
     fetch_user_info,
     fetch_user_email,
     # get_user_statistics,
-    # change_user_information,
+    change_user_information,
     fetch_table_rows)
 
 from db_setup import create_database, database_is_exists, get_connection
@@ -28,24 +28,25 @@ def main():
         print(f"Рады Вас снова видеть {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
-        first_name = input("Введите, пожалуйста, Ваше имя: ")
-        last_name = input("Введите, пожалуйста, Вашу фамилию: ")
+        first_name = input("Необходимо выполнить регистрацию. "
+                           "Введите, пожалуйста, Ваше имя: ")
+        last_name = input("Введите Вашу фамилию: ")
 
         while True:
-            email = input("Введите, пожалуйста, Ваш почтовый ящик: ")
+            email = input("Последним шагом необходимо ввести email: ")
             try:
                 fetch_user_email(email)
-                print("Этот email уже существует")
+                print("Данный email уже существует")
                 choice = input(
-                    "Хотите ввести другой email? (да/нет): ").strip().lower()
+                    "Хотите ввести другой email? (да/нет): ").lower()
                 if choice != "да":
-                    print("К сожалению, вы не зарегистрированы")
+                    print("К сожалению, вы не выполнили регистрацию")
                     return
             except ValueError:
                 break
 
         add_user_to_database(input_login, first_name, last_name, email)
-        print("Вы успешно зарегистрированы!")
+        print("Регистрация прошла успешно!")
 
     action = input("Выберите доступное действие:\n1 - Найти фильм\n"
                    "2 - Получить статистику\n3 - Изменить свои данные\n")
@@ -67,18 +68,6 @@ def main():
         for document_id, relevance in find_documents(documents, stop_words, query):
             print(
                 f"Номер документа id = {document_id} | релевантность документа = {relevance}")
-
-    elif action == "2":
-        # Логика для получения статистики
-        print("Получаем статистику...")
-    elif action == "3":
-        # Логика для изменения данных пользователя
-        print("Изменяем ваши данные...")
-    else:
-        print("Неверный выбор действия.")
-
-        # insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
-
     # elif action == "2":
     #     stat_action = input(
     #         "1 - Статистика по всем пользователям, 2 - Статистика по вам\n")
@@ -86,14 +75,28 @@ def main():
     #         print(get_all_users_statistics())
     #     elif stat_action == "2":
     #         print(get_user_statistics(login))
-    # elif action == "3":
-    #     field_action = input(
-    #         "Выберите действие: 1 - Сменить first_name, 2 - Сменить last_name, 3 - Сменить user_name\n")
-    #     new_value = input("Введите новое значение: ")
-    #     fields = {"1": "first_name", "2": "last_name", "3": "user_name"}
-    #     if field_action in fields:
-    #         change_user_information(login, fields[field_action], new_value)
-    #         print("Данные успешно обновлены")
+    elif action == "3":
+        while True:
+            print("\nВарианты для изменения:\n1 - Изменить login\n"
+                  "2 - Изменить first_name\n3 - Изменить last_name\n"
+                  "4 - Изменить email\n0 - Exit")
+            field_action = input("Выберите изменение: ")
+
+            if field_action == "0":
+                print("Выход из режима обновления данных")
+                break
+
+            field_map = {"1": "login", "2": "first_name",
+                         "3": "last_name", "4": "email"}
+
+            if field_action in field_map:
+                new_value = input(f"Введите новое значение для "
+                                  f"{field_map[field_action]}: ")
+
+                change_user_information(my_base, input_login,
+                                        field_map[field_action], new_value)
+            else:
+                print("Неверный ввод, попробуйте снова")
     #     else:
     #         print("Неверный ввод")
 

@@ -1,6 +1,6 @@
-from config import my_base
-
 from db_setup import get_connection
+
+from config import my_base
 
 
 def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
@@ -39,16 +39,12 @@ print("Найдено", result)
 #     return "Статистика по текущему пользователю"
 
 
-# def change_user_information(username: str, field: str, new_value: str) -> str:
-#     return "Данные пользователя изменены!"
-
-
-def user_exists_in_database(login: str) -> bool:  # готово
+def user_exists_in_database(input_login: str) -> bool:
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
     query = "SELECT id FROM users WHERE login = %s"
-    cursor.execute(query, (login,))
+    cursor.execute(query, (input_login,))
     result = cursor.fetchone()
 
     cursor.close()
@@ -57,27 +53,25 @@ def user_exists_in_database(login: str) -> bool:  # готово
     return result is not None
 
 
-def fetch_user_info(login: str) -> dict[str, str]:  # готово
+def fetch_user_info(input_login: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
     query = "SELECT first_name, last_name FROM users WHERE login = %s"
-    cursor.execute(query, (login,))
+    cursor.execute(query, (input_login,))
     result = cursor.fetchone()
 
     cursor.close()
     conn.close()
 
     if result:
-        # print(f"Пользователь {first_name} {last_name} есть в системе")
         return {"first_name": result[0], "last_name": result[1]}
-
     else:
         raise ValueError("Пользователь не найден")
 
 
 def add_user_to_database(login: str, first_name: str,
-                         last_name: str, email: str) -> None:  # готово
+                         last_name: str, email: str) -> None:
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
@@ -92,11 +86,10 @@ def add_user_to_database(login: str, first_name: str,
     cursor.close()
     conn.close()
 
-    print(f"Пользователь {first_name} {last_name} успешно добавлен в "
-          f"базу данных")
+    print(f"Пользователь {first_name} {last_name} добавлен в базу данных")
 
 
-def fetch_user_email(email: str) -> dict[str, str]:  # готово
+def fetch_user_email(email: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
@@ -108,19 +101,51 @@ def fetch_user_email(email: str) -> dict[str, str]:  # готово
     conn.close()
 
     if result:
-        print("Этот email уже зарегистрирован. Пожалуйста, введите другой")
+        print("Данный email уже зарегистрирован. Пожалуйста, введите другой")
         return {"email": result[0]}
-
     else:
         raise ValueError("Email не найден")
 
 
-# login = 'Alex_777'
-# first_name = 'Alex'
-# last_name = 'Petrov'
-# email = 'google@gmail.com'
+def change_user_information(my_base: str, input_login: str,
+                            field: str, new_value: str) -> str:
+    permitted_fields = {"login", "first_name", "last_name", "email"}
+    if field not in permitted_fields:
+        print(f"Ошибка: изменение поля '{field}' запрещено!")
+        return
 
-# if __name__ == '__main__':
-    # add_user_to_database(login, first_name, last_name, email)
-    # fetch_user_info('test')
-    # user_exists_in_database('Alex_777')
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    query = f"UPDATE users SET {field} = %s WHERE login = %s"
+    cursor.execute(query, (new_value, input_login))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    print(f"Поле '{field}' успешно обновлено для пользователя {input_login}")
+
+
+# def user_input_update(my_base, input_login):
+#     while True:
+#         print("\nВарианты для изменения:\n1 - Изменить login\n"
+#               "2 - Изменить first_name\n3 - Изменить last_name\n"
+#               "4 - Изменить email\n0 - Exit")
+
+#         field_action = input("Введите номер: ")
+
+#         if field_action == "0":
+#             print("Выход из режима обновления данных")
+#             break
+
+#         field_map = {"1": "login", "2": "first_name",
+#                      "3": "last_name", "4": "email"}
+
+#         if field_action in field_map:
+#             new_value = input(f"Введите новое значение для "
+#                               f"{field_map[field_action]}: ")
+#             change_user_information(my_base, input_login,
+#                                     field_map[field_action], new_value)
+#         else:
+#             print("Неверный ввод, попробуйте снова")
