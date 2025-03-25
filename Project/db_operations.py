@@ -46,7 +46,7 @@ def fetch_user_info(login: str) -> dict[str, str]:  # готово
     conn.close()
 
     if result:
-        print(f"Пользователь {first_name} {last_name} есть в системе")
+        # print(f"Пользователь {first_name} {last_name} есть в системе")
         return {"first_name": result[0], "last_name": result[1]}
 
     else:
@@ -91,30 +91,6 @@ def fetch_user_email(email: str) -> dict[str, str]:  # готово
     else:
         raise ValueError("Email не найден")
 
-
-
-# def get_existing_users():
-#     conn = get_connection(db_name='Yuniou_300924')
-#     cursor = conn.cursor()
-
-#     cursor.execute('SELECT email FROM users')
-
-#     users = cursor.fetchall()
-#     cursor.close()
-#     conn.close()
-#     return {user[0] for user in users}
-# print(get_existing_users())
-
-# def email_exists(email):
-#     existing_emails = get_existing_users()
-#     return email in existing_emails
-
-# while True:
-#     email = input('Введите, пожалуйста, ваш почтовый ящик: ')
-#     if email_exists(email):
-#         print("Этот email уже зарегистрирован. Пожалуйста, введите другой.")
-#     else:
-#         break
 
 # login = 'Alex_777'
 # first_name = 'Alex'

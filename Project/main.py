@@ -1,27 +1,26 @@
 from db_operations import (
-    get_all_users_statistics,
+    # get_all_users_statistics,
     add_user_to_database,
     user_exists_in_database,
     fetch_user_info,
-    fetch_user_email,
-    get_user_statistics,
-    change_user_information,
-    fetch_table_rows,
-    database_is_exists)
+    fetch_user_email)
+    # get_user_statistics,
+    # change_user_information,
+    # fetch_table_rows)
 
 from db_setup import create_database, database_is_exists, get_connection
 
-from search_enginee import (
-    parse_stop_words,
-    find_documents
-)
+# from search_enginee import (
+#     parse_stop_words,
+#     find_documents
+# )
 
 
 def main():
     if not database_is_exists("Yuniou_300924"):
         create_database()
 
-    login = "Alex_777"
+    login = input("Для входа в систему введите Ваш логин: ")
     if user_exists_in_database(login):
         login_data = fetch_user_info(login)
         print(f"Рады Вас снова видеть {login_data['first_name']} "
@@ -29,14 +28,21 @@ def main():
     else:
         first_name = input("Введите, пожалуйста, Ваше имя: ")
         last_name = input("Введите, пожалуйста, Вашу фамилию: ")
-        email = input("Введите, пожалуйста, Ваш почтовый ящик: ")
 
-        try:
-            fetch_user_email(email)
-            print("Этот email уже зарегистрирован. Пожалуйста, введите другой")
-        except ValueError:
-            add_user_to_database(login, first_name, last_name, email)
-            print("Вы успешно зарегистрированы!")
+        while True:
+            email = input("Введите, пожалуйста, Ваш почтовый ящик: ")
+            try:
+                fetch_user_email(email)
+                print("Этот email уже существует")
+                choice = input("Хотите ввести другой email? (да/нет): ").strip().lower()
+                if choice != "да":
+                    print("К сожалению, вы не зарегистрированы.")
+                    return
+            except ValueError:
+                break
+
+        add_user_to_database(login, first_name, last_name, email)
+        print("Вы успешно зарегистрированы!")
 
     # action = input(
     #     "Выберите доступное действие: 1 - Найти фильм, 2 - Получить статистику, 3 - Изменить свои данные\n")
