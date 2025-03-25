@@ -1,3 +1,5 @@
+from config import my_base
+
 from db_setup import get_connection
 
 
@@ -11,7 +13,7 @@ def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    if not rows:  # Check if no rows were fetched
+    if not rows:
         print("По Вашему запросу ничего не найдено")
         return []
 
@@ -42,7 +44,7 @@ print("Найдено", result)
 
 
 def user_exists_in_database(login: str) -> bool:  # готово
-    conn = get_connection(db_name="Yuniou_300924")
+    conn = get_connection(my_base)
     cursor = conn.cursor()
 
     query = "SELECT id FROM users WHERE login = %s"
@@ -56,7 +58,7 @@ def user_exists_in_database(login: str) -> bool:  # готово
 
 
 def fetch_user_info(login: str) -> dict[str, str]:  # готово
-    conn = get_connection(db_name="Yuniou_300924")
+    conn = get_connection(my_base)
     cursor = conn.cursor()
 
     query = "SELECT first_name, last_name FROM users WHERE login = %s"
@@ -76,7 +78,7 @@ def fetch_user_info(login: str) -> dict[str, str]:  # готово
 
 def add_user_to_database(login: str, first_name: str,
                          last_name: str, email: str) -> None:  # готово
-    conn = get_connection(db_name="Yuniou_300924")
+    conn = get_connection(my_base)
     cursor = conn.cursor()
 
     insert_query = """
@@ -95,7 +97,7 @@ def add_user_to_database(login: str, first_name: str,
 
 
 def fetch_user_email(email: str) -> dict[str, str]:  # готово
-    conn = get_connection(db_name="Yuniou_300924")
+    conn = get_connection(my_base)
     cursor = conn.cursor()
 
     query = "SELECT email FROM users WHERE email = %s"

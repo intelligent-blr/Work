@@ -1,41 +1,48 @@
-def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
-    query = """
-            SELECT film_id, title, description, release_year, special_features
-            FROM film
-            """
+from db_setup import get_connection
 
+
+def update_user_field(db_name, user_login, field, new_value):
+    permitted_fields = {"login", "first_name", "last_name", "email"}
+    if field not in permitted_fields:
+        print(f"Ошибка: изменение поля '{field}' запрещено!")
+        return
+
+    conn = get_connection(db_name=db_name)
     cursor = conn.cursor()
-    cursor.execute(query)
-    rows = cursor.fetchall()
 
-    result = []
-    for row in rows:
-        film_id = row[0]
-        combined_text = " ".join([str(row[1]), str(row[2]), str(row[4])])
-        word_set = set(combined_text.split())
-        result.append((film_id, word_set))
-    print(result)
-    return result
+    query = f"UPDATE users SET {field} = %s WHERE login = %s"
+    cursor.execute(query, (new_value, user_login))
 
-    if action == "1":
-        stop_words = input("Введите строку стоп слов: ")
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-        stop_words = parse_stop_words(stop_words)
+    print(f"Поле '{field}' успешно обновлено для пользователя {user_login}")
 
-        # Получение документов
-        if conn := get_connection("sakila"):
 
-            documents = fetch_table_rows(conn, "film")
-            conn.close()
+def user_input_update(db_name, user_login):
+    while True:
+        print("\nВарианты для изменения:\n1 - login,\n2 - first_name"
+              "\n3 - last_name,\n4 - email,\n0 - Exit")
+
+        choice = input("Введите номер: ").strip()
+
+        if choice == "0":
+            print("Выход из режима обновления данных")
+            break
+
+        field_map = {"1": "login", "2": "first_name",
+                     "3": "last_name", "4": "email"}
+
+        if choice in field_map:
+            new_value = input(f"Введите новое значение для "
+                              f"{field_map[choice]}: ").strip()
+            update_user_field(db_name, user_login, field_map[choice], new_value)
         else:
-            print("Не удалось подключиться к базе данных.")
-
-        # Отпарвка поискового запроса
-        query = input("Введите строку запроса: ")
-        for document_id, relevance in find_documents(documents, stop_words, query):
-            print(
-                f"Номер документа id = {document_id} | релевантность документа = {relevance}")
-            insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
+            print("Неверный ввод, попробуйте снова")
 
 
-def parse_query(text: str, stop_words: set[str]) -> set[str]:
+db_name = "Yuniou_300924"
+user_login = input("Введите ваш login: ")
+
+user_input_update(db_name, user_login)

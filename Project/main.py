@@ -1,3 +1,5 @@
+from config import my_base
+
 from db_operations import (
     # get_all_users_statistics,
     add_user_to_database,
@@ -17,13 +19,12 @@ from search_enginee import (
 
 
 def main():
-    if not database_is_exists("Yuniou_300924"):
+    if not database_is_exists(my_base):
         create_database()
 
-    # login = input("Для входа в систему введите Ваш логин: ")
-    login = "Alex_888"
-    if user_exists_in_database(login):
-        login_data = fetch_user_info(login)
+    input_login = input("Для входа в систему введите Ваш логин: ")
+    if user_exists_in_database(input_login):
+        login_data = fetch_user_info(input_login)
         print(f"Рады Вас снова видеть {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
@@ -35,14 +36,15 @@ def main():
             try:
                 fetch_user_email(email)
                 print("Этот email уже существует")
-                choice = input("Хотите ввести другой email? (да/нет): ").strip().lower()
+                choice = input(
+                    "Хотите ввести другой email? (да/нет): ").strip().lower()
                 if choice != "да":
                     print("К сожалению, вы не зарегистрированы")
                     return
             except ValueError:
                 break
 
-        add_user_to_database(login, first_name, last_name, email)
+        add_user_to_database(input_login, first_name, last_name, email)
         print("Вы успешно зарегистрированы!")
 
     action = input("Выберите доступное действие:\n1 - Найти фильм\n"
@@ -63,7 +65,8 @@ def main():
         # Отпарвка поискового запроса
         query = input("Введите строку запроса: ")
         for document_id, relevance in find_documents(documents, stop_words, query):
-            print(f"Номер документа id = {document_id} | релевантность документа = {relevance}")
+            print(
+                f"Номер документа id = {document_id} | релевантность документа = {relevance}")
 
     elif action == "2":
         # Логика для получения статистики
@@ -74,7 +77,7 @@ def main():
     else:
         print("Неверный выбор действия.")
 
-            # insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
+        # insert_data({'query': "Безумный доктер", 'response': [407, 349, 20, 398]})
 
     # elif action == "2":
     #     stat_action = input(

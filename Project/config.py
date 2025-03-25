@@ -7,3 +7,5 @@ dbconfig_read = {'host': 'ich-db.edu.itcareerhub.de',
                  'user': 'ich1',
                  'password': 'password'
                  }
+
+my_base = "Yuniou_300924"
