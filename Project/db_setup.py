@@ -2,7 +2,8 @@ import mysql.connector
 from config import dbconfig_edit, dbconfig_read, my_base
 
 
-def get_connection(db_name=None, read_db=False):  # готово
+# подключение к базе данных
+def get_connection(db_name=None, read_db=False):
     try:
         conn_params = dbconfig_read.copy() if read_db else dbconfig_edit.copy()
         if db_name:
@@ -17,8 +18,9 @@ def get_connection(db_name=None, read_db=False):  # готово
         return None
 
 
-def database_is_exists(db_name, read_db=False):  # готово
-    conn = get_connection(db_name=None, read_db=read_db)
+# проверка на существование базы данных
+def database_is_exists(db_name, read_db=False):
+    conn = get_connection(db_name)
 
     if conn:
         try:
@@ -28,10 +30,10 @@ def database_is_exists(db_name, read_db=False):  # готово
             # print(databases)
 
             if db_name in databases:
-                # print(f"База данных '{db_name}' существует")
+                print(f"База данных '{db_name}' существует")
                 return True
             else:
-                # print(f"База данных '{db_name}' не существует")
+                print(f"База данных '{db_name}' не существует")
                 return False
 
         except mysql.connector.Error as err:
@@ -47,16 +49,16 @@ def database_is_exists(db_name, read_db=False):  # готово
         return False
 
 
-def create_database():  # готово
+# создание базы данных и таблиц
+def create_database():
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{my_base}`;")
-        print(f"База данных {my_base} успешно создана")
+        print(f"База данных {my_base} успешно создана или уже существует")
 
         cursor.execute(f"USE `{my_base}`")
-        # print('Подключился к Yuniou_300924')
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -94,17 +96,8 @@ def create_database():  # готово
 
 
 if __name__ == '__main__':
-    create_database()
+    # create_database()
 
     # Проверка
     # conn = get_connection()
     # conn = get_connection(read_db=True)
-    # cursor = conn.cursor()
-    # cursor.close()
-    # conn.close()
-
-    # exists = database_is_exists(db_name, read_db=False)  # read_db=True
-    # if exists:
-    #     print(f"База данных '{db_name}' доступна для использования")
-    # else:
-    #     print(f"База данных '{db_name}' не существует")

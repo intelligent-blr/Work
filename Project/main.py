@@ -1,21 +1,18 @@
 from config import my_base
 
 from db_operations import (
-    # get_all_users_statistics,
     add_user_to_database,
     user_exists_in_database,
     fetch_user_info,
     fetch_user_email,
+    # get_all_users_statistics,
     # get_user_statistics,
     change_user_information,
     fetch_table_rows)
 
 from db_setup import create_database, database_is_exists, get_connection
 
-from search_enginee import (
-    parse_stop_words,
-    find_documents
-)
+from search_enginee import parse_stop_words, find_documents
 
 
 def main():
@@ -25,7 +22,7 @@ def main():
     input_login = input("Для входа в систему введите Ваш логин: ")
     if user_exists_in_database(input_login):
         login_data = fetch_user_info(input_login)
-        print(f"Рады Вас снова видеть {login_data['first_name']} "
+        print(f"Добро пожаловать {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
         first_name = input("Необходимо выполнить регистрацию. "
@@ -36,7 +33,6 @@ def main():
             email = input("Последним шагом необходимо ввести email: ")
             try:
                 fetch_user_email(email)
-                print("Данный email уже существует")
                 choice = input(
                     "Хотите ввести другой email? (да/нет): ").lower()
                 if choice != "да":
@@ -46,7 +42,8 @@ def main():
                 break
 
         add_user_to_database(input_login, first_name, last_name, email)
-        print("Регистрация прошла успешно!")
+        print(f"Регистрация прошла успешно! Добро пожаловать "
+              f"{first_name} {last_name}!")
 
     action = input("Выберите доступное действие:\n1 - Найти фильм\n"
                    "2 - Получить статистику\n3 - Изменить свои данные\n")

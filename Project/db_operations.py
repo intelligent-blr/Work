@@ -38,7 +38,7 @@ print("Найдено", result)
 # def get_user_statistics(username: str) -> str:
 #     return "Статистика по текущему пользователю"
 
-
+# проверка существования login в системе
 def user_exists_in_database(input_login: str) -> bool:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -49,10 +49,10 @@ def user_exists_in_database(input_login: str) -> bool:
 
     cursor.close()
     conn.close()
-
     return result is not None
 
 
+# поиск имени в фамилии в базе при существующем login
 def fetch_user_info(input_login: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -70,6 +70,7 @@ def fetch_user_info(input_login: str) -> dict[str, str]:
         raise ValueError("Пользователь не найден")
 
 
+# добавление нового пользователя
 def add_user_to_database(login: str, first_name: str,
                          last_name: str, email: str) -> None:
     conn = get_connection(my_base)
@@ -82,13 +83,12 @@ def add_user_to_database(login: str, first_name: str,
     cursor.execute(insert_query, (login, first_name, last_name, email))
 
     conn.commit()
-
     cursor.close()
     conn.close()
-
     print(f"Пользователь {first_name} {last_name} добавлен в базу данных")
 
 
+# поиск существующего email
 def fetch_user_email(email: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -107,6 +107,7 @@ def fetch_user_email(email: str) -> dict[str, str]:
         raise ValueError("Email не найден")
 
 
+# изменение информации о пользователе
 def change_user_information(my_base: str, input_login: str,
                             field: str, new_value: str) -> str:
     permitted_fields = {"login", "first_name", "last_name", "email"}
@@ -123,29 +124,4 @@ def change_user_information(my_base: str, input_login: str,
     conn.commit()
     cursor.close()
     conn.close()
-
     print(f"Поле '{field}' успешно обновлено для пользователя {input_login}")
-
-
-# def user_input_update(my_base, input_login):
-#     while True:
-#         print("\nВарианты для изменения:\n1 - Изменить login\n"
-#               "2 - Изменить first_name\n3 - Изменить last_name\n"
-#               "4 - Изменить email\n0 - Exit")
-
-#         field_action = input("Введите номер: ")
-
-#         if field_action == "0":
-#             print("Выход из режима обновления данных")
-#             break
-
-#         field_map = {"1": "login", "2": "first_name",
-#                      "3": "last_name", "4": "email"}
-
-#         if field_action in field_map:
-#             new_value = input(f"Введите новое значение для "
-#                               f"{field_map[field_action]}: ")
-#             change_user_information(my_base, input_login,
-#                                     field_map[field_action], new_value)
-#         else:
-#             print("Неверный ввод, попробуйте снова")
