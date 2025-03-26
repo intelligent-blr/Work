@@ -133,25 +133,65 @@ def find_film_year_and_genre(year: int, genre: str):
     conn = get_connection("sakila", read_db=True)
     cursor = conn.cursor()
 
-    query = """
-       SELECT t1.title
-        FROM film t1
-            LEFT JOIN film_category t2 ON t1.film_id = t2.film_id
-            LEFT JOIN category t3 ON t2.category_id = t3.category_id
-        WHERE t1.release_year = %s AND t3.name = %s;
-    """
+    if year and genre:
+        query = """
+            SELECT f.title
+            FROM film f
+                LEFT JOIN film_category fc ON f.film_id = fc.film_id
+                LEFT JOIN category c ON fc.category_id = c.category_id
+            WHERE f.release_year = %s AND c.name = %s;
+        """
+        params = (year, genre)
 
-    cursor.execute(query, (year, genre))
+    elif year:
+        return find_film_year(year)
+
+    elif genre:
+        return find_film_genre(genre.lower())
+
+    else:
+        return []
+
+    cursor.execute(query, (params))
     results = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    if results:
-        return [film[0] for film in results]
-    else:
-        return []
+    return [film[0] for film in results]
 
+
+# ищем только по году
+def find_film_year(year):
+    conn = get_connection("sakila", read_db=True)
+    cursor = conn.cursor()
+
+    query = "SELECT title FROM film WHERE release_year = %s"
+    cursor.execute(query, [year])
+    films = [row[0] for row in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+    return films
+
+
+# ищем только по жанру
+def find_film_genre(genre):
+    conn = get_connection("sakila", read_db=True)
+    cursor = conn.cursor()
+
+    query = """
+        SELECT title FROM film f
+            JOIN film_category fc ON f.film_id = fc.film_id
+            JOIN category c ON fc.category_id = c.category_id
+        WHERE LOWER(c.name) = %s
+    """
+    cursor.execute(query, [genre])
+    films = [row[0] for row in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+    return films
 
 # films = find_film_year_and_genre(2012, "Drama")
 

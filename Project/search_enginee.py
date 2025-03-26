@@ -1,8 +1,3 @@
-from config import file_dir
-from db_operations import fetch_table_rows
-from db_setup import get_connection
-
-
 # парсим слова введенные от пользователя - stop_words
 def parse_query(user_query: str, stop_words: set[str]) -> set[str]:
     user_query = set(user_query.lower().split())

@@ -65,8 +65,13 @@ def main():
 
             if choice == "1":  # год и жанр
                 try:
-                    year = int(input("Введите год выпуска фильма: "))
-                    genre = input("Введите жанр фильма: ").lower()
+                    input_year = input("Введите год выпуска фильма "
+                                       "(необязательный критерий): ")
+                    input_genre = input("Введите жанр фильма "
+                                        "(необязательный критерий): ").lower()
+
+                    year = int(input_year) if input_year else None
+                    genre = input_genre if input_genre else None
 
                     films = find_film_year_and_genre(year, genre)
 
@@ -88,17 +93,12 @@ def main():
 
                 films = find_documents(documents, stop_words, user_query)
                 if isinstance(films, str):
-                        print(films)
+                    print(films)
                 else:
-                    print("\nНайденные фильмы (ID фильма, количество совпадений):")
+                    print("\nНайденные фильмы (id фильма, "
+                          "количество совпадений):")
                     for film_id, match_count in films:
                         print(f"ID: {film_id}, совпадений: {match_count}")
-                # if films == "По Вашему запросу не найдено ни одного совпадения.":
-                #     print(films)
-                # else:
-                #     print("Найденные фильмы:")
-                #     for film_id, match_count in films:
-                #         print(f"ID фильма: {film_id}, Количество совпадений: {match_count}")
 
             # if choice == "3":  # статистика
 
