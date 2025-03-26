@@ -8,26 +8,30 @@ from db_operations import (
     # get_all_users_statistics,
     # get_user_statistics,
     change_user_information,
-    fetch_table_rows)
+    fetch_table_rows,
+    find_film_year_and_genre)
 
-from db_setup import create_database, database_is_exists, get_connection
+from db_setup import (
+    get_connection,
+    create_database,
+    database_is_exists)
 
-from search_enginee import parse_stop_words, find_documents
+from search_enginee import parse_stop_words, find_documents, parse_query
 
 
 def main():
     if not database_is_exists(my_base):
         create_database()
 
-    input_login = input("Для входа в систему введите Ваш логин: ")
+    input_login = input("Для входа в систему введите ваш логин: ")
     if user_exists_in_database(input_login):
         login_data = fetch_user_info(input_login)
         print(f"Добро пожаловать {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
         first_name = input("Необходимо выполнить регистрацию. "
-                           "Введите, пожалуйста, Ваше имя: ")
-        last_name = input("Введите Вашу фамилию: ")
+                           "Введите, пожалуйста, ваше имя: ")
+        last_name = input("Введите вашу фамилию: ")
 
         while True:
             email = input("Последним шагом необходимо ввести email: ")
@@ -56,38 +60,53 @@ def main():
             choice = input("Выберите вариант поиска: ")
 
             if choice == "0":
-                print("Выход из режима поиска")
+                print("Выход из режима поиска.")
                 break
 
-            year = int(input("Введите год выпуска фильма: "))
-            feature = input("Введите special_features: ").strip()
+            if choice == "1":  # год и жанр
+                try:
+                    year = int(input("Введите год выпуска фильма: "))
+                    genre = input("Введите жанр фильма: ").lower()
 
-            films = find_release_year_and_special_features(year, feature)
+                    films = find_film_year_and_genre(year, genre)
 
-            if isinstance(films, str):
-                    print(films)
-            else:
-                for film in films:
-                        print(film)
+                    if not films:
+                        print("По вашему запросу ничего не найдено.")
+                    else:
+                        print("\nНайденные фильмы: ")
+                        for film in films:
+                            print(film)
+                except ValueError:
+                    print("Ошибка: Введите корректный год (целое число).")
 
-            if conn := get_connection("sakila", read_db=True):
+            if choice == "2":  # ключевые слова
+                conn = get_connection("sakila", read_db=True)
+                user_query = input("Введите описание фильма: ")
+                stop_words = parse_stop_words(file_dir)
+
                 documents = fetch_table_rows(conn)
-                conn.close()
-            else:
-                print("Не удалось подключиться к базе данных.")
-                return
 
-        # query = input("Введите строку запроса: ")
-        # for document_id, relevance in find_documents(documents, stop_words, query):
-        #     print(
-        #         f"Номер документа id = {document_id} | релевантность документа = {relevance}")
-    # elif action == "2":
-    #     stat_action = input(
-    #         "1 - Статистика по всем пользователям, 2 - Статистика по вам\n")
-    #     if stat_action == "1":
-    #         print(get_all_users_statistics())
-    #     elif stat_action == "2":
-    #         print(get_user_statistics(login))
+                films = find_documents(documents, stop_words, user_query)
+                print(films)
+                # if films == "По Вашему запросу не найдено ни одного совпадения.":
+                #     print(films)
+                # else:
+                #     print("Найденные фильмы:")
+                #     for film_id, match_count in films:
+                #         print(f"ID фильма: {film_id}, Количество совпадений: {match_count}")
+
+            # if choice == "3":  # статистика
+
+
+
+            # if conn := get_connection("sakila", read_db=True):
+            #     documents = fetch_table_rows(conn)
+            #     conn.close()
+            # else:
+            #     print("Не удалось подключиться к базе данных.")
+            #     return
+
+
     elif action == "3":
         while True:
             print("\nВарианты для изменения:\n1 - Изменить login\n"
@@ -96,7 +115,7 @@ def main():
             field_action = input("Выберите изменение: ")
 
             if field_action == "0":
-                print("Выход из режима обновления данных")
+                print("Выход из режима обновления данных.")
                 break
 
             field_map = {"1": "login", "2": "first_name",
@@ -108,8 +127,8 @@ def main():
 
                 change_user_information(my_base, input_login,
                                         field_map[field_action], new_value)
-            else:
-                print("Неверный ввод, попробуйте снова")
+            # else:
+            #     print("Неверный ввод, попробуйте снова")
     #     else:
     #         print("Неверный ввод")
 

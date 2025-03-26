@@ -16,7 +16,7 @@ def fetch_table_rows(conn) -> list[tuple[int, str]]:
     rows = cursor.fetchall()
 
     if not rows:
-        print("По Вашему запросу ничего не найдено")
+        print("По Вашему запросу ничего не найдено.")
         return []
 
     documents = [
@@ -24,15 +24,12 @@ def fetch_table_rows(conn) -> list[tuple[int, str]]:
         for film_id, title, description in rows
     ]
 
-    # for film_id, document in documents:
-    #     document_str = document.lower()
-    #     print(f"film_id: {film_id}, document: {document_str}")
-    # print(documents)
     return documents
 
 
-conn = get_connection("sakila", read_db=True)
-result = fetch_table_rows(conn)
+# conn = get_connection("sakila", read_db=True)
+# result = fetch_table_rows(conn)
+# print(result)
 
 
 # def get_all_users_statistics() -> str:
@@ -71,7 +68,7 @@ def fetch_user_info(input_login: str) -> dict[str, str]:
     if result:
         return {"first_name": result[0], "last_name": result[1]}
     else:
-        raise ValueError("Пользователь не найден")
+        raise ValueError("Пользователь не найден.")
 
 
 # добавление нового пользователя
@@ -128,30 +125,39 @@ def change_user_information(my_base: str, input_login: str,
     conn.commit()
     cursor.close()
     conn.close()
-    print(f"Поле '{field}' успешно обновлено для пользователя {input_login}")
+    print(f"Поле '{field}' успешно обновлено для пользователя {input_login}.")
 
 
 # поиск фильмов по году и жанру
-def find_film_year_and_feature(year: int, feature: str):
+def find_film_year_and_genre(year: int, genre: str):
     conn = get_connection("sakila", read_db=True)
     cursor = conn.cursor()
 
     query = """
-        SELECT *
-        FROM film
-        WHERE release_year = %s
-        AND special_features LIKE %s
+       SELECT t1.title
+        FROM film t1
+            LEFT JOIN film_category t2 ON t1.film_id = t2.film_id
+            LEFT JOIN category t3 ON t2.category_id = t3.category_id
+        WHERE t1.release_year = %s AND t3.name = %s;
     """
 
-    feature_search = f"%{feature}%"
-
-    cursor.execute(query, (year, feature_search))
+    cursor.execute(query, (year, genre))
     results = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
     if results:
-        return results
+        return [film[0] for film in results]
     else:
-        return "По Вашему запросу ничего не найдено"
+        return []
+
+
+# films = find_film_year_and_genre(2012, "Drama")
+
+# if films:
+#     print("Найденные фильмы:")
+#     for film in films:
+#         print(film)
+# else:
+#     print("По Вашему запросу ничего не найдено.")

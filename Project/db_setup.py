@@ -30,10 +30,10 @@ def database_is_exists(db_name, read_db=False):
             # print(databases)
 
             if db_name in databases:
-                print(f"База данных '{db_name}' существует")
+                print(f"База данных '{db_name}' существует.")
                 return True
             else:
-                print(f"База данных '{db_name}' не существует")
+                print(f"База данных '{db_name}' не существует.")
                 return False
 
         except mysql.connector.Error as err:
@@ -45,7 +45,7 @@ def database_is_exists(db_name, read_db=False):
             conn.close()
 
     else:
-        print("Не удалось подключиться к серверу MySQL")
+        print("Не удалось подключиться к серверу MySQL.")
         return False
 
 
@@ -56,7 +56,7 @@ def create_database():
         cursor = conn.cursor()
 
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{my_base}`;")
-        print(f"База данных {my_base} успешно создана или уже существует")
+        print(f"База данных {my_base} успешно создана или уже существует.")
 
         cursor.execute(f"USE `{my_base}`")
         cursor.execute("""
@@ -72,7 +72,7 @@ def create_database():
                 ON UPDATE CURRENT_TIMESTAMP
             )
         """)
-        print("Таблица users успешно создана")
+        print("Таблица users успешно создана.")
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS queries (
@@ -84,7 +84,7 @@ def create_database():
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
         """)
-        print("Таблица queries успешно создана")
+        print("Таблица queries успешно создана.")
 
     except mysql.connector.Error as err:
         print(f"Ошибка: {err}")
@@ -92,7 +92,7 @@ def create_database():
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
-            print("Соединение с MySQL закрыто")
+            print("Соединение с MySQL закрыто.")
 
 
 # if __name__ == '__main__':
