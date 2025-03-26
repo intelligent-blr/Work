@@ -1,20 +1,12 @@
 from config import file_dir
-from db_operations import fetch_and_print_table_rows
-
-
-def split_words(text: str) -> list[str]:
-    pass
-
-
-def split_words_no_stop(text: str, stop_words: set[str]) -> list[str]:
-    # split_words()
-    pass
+from db_operations import fetch_table_rows
+from db_setup import get_connection
 
 
 # парсим слова введенные от пользователя - stop_words
 def parse_query(query: str, stop_words: set[str]) -> set[str]:
-    words = set(query.lower().split())
-    relevant_words = words.difference(stop_words)
+    query = set(query.lower().split())
+    relevant_words = query.difference(stop_words)
     return relevant_words
 
 
@@ -30,13 +22,26 @@ def parse_stop_words(filename: str) -> set[str]:
     return set(stop_words.lower().split(", "))
 
 
-def find_documents(documents: list[tuple[int, set[str]]], stop_words: set[str],
+# находим фильмы - -стоп слова и выводим с количеством совпадений
+def find_documents(documents, stop_words: set[str],
                    query: str) -> list[tuple[int, int]]:
     query_no_stop_words = parse_query(query, stop_words)
-    documents = fetch_and_print_table_rows()
-    for id, document in documents:
-        print(id)
-        print(match_document(document, query_no_stop_words))
+    result = []
+    for film_id, document in documents:
+        relevance = match_document(document, query_no_stop_words)
+        if relevance > 0:
+            result.append((film_id, relevance))
+            print(f"film_id: {film_id}, match_count: {relevance}")
+
+    if not result:
+        return "По Вашему запросу не найдено ни одного совпадения"
+
+    return result
 
 
-find_documents(documents, '', "")
+query = "zorro"
+conn = get_connection("sakila", read_db=True)
+documents = fetch_table_rows(conn)
+stop_words = parse_stop_words(file_dir)
+results = find_documents(documents, stop_words, query)
+print(results)

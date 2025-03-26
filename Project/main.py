@@ -1,4 +1,4 @@
-from config import my_base
+from config import my_base, file_dir
 
 from db_operations import (
     add_user_to_database,
@@ -49,20 +49,38 @@ def main():
                    "2 - Получить статистику\n3 - Изменить свои данные\n")
 
     if action == "1":
+        while True:
+            print("\nВарианты для поиска:\n1 - Найти фильмы по году и жанру\n"
+                  "2 - Ввести описание фильма\n3 - Вывести статистику по "
+                  "самым популярным запросам\n0 - Exit")
+            choice = input("Выберите вариант поиска: ")
 
-        # Получение документов
-        if conn := get_connection("sakila"):
-            documents = fetch_table_rows(conn, "film")
-            conn.close()
-        else:
-            print("Не удалось подключиться к базе данных.")
-            return
+            if choice == "0":
+                print("Выход из режима поиска")
+                break
 
-        # Отпарвка поискового запроса
-        query = input("Введите строку запроса: ")
-        for document_id, relevance in find_documents(documents, stop_words, query):
-            print(
-                f"Номер документа id = {document_id} | релевантность документа = {relevance}")
+            year = int(input("Введите год выпуска фильма: "))
+            feature = input("Введите special_features: ").strip()
+
+            films = find_release_year_and_special_features(year, feature)
+
+            if isinstance(films, str):
+                    print(films)
+            else:
+                for film in films:
+                        print(film)
+
+            if conn := get_connection("sakila", read_db=True):
+                documents = fetch_table_rows(conn)
+                conn.close()
+            else:
+                print("Не удалось подключиться к базе данных.")
+                return
+
+        # query = input("Введите строку запроса: ")
+        # for document_id, relevance in find_documents(documents, stop_words, query):
+        #     print(
+        #         f"Номер документа id = {document_id} | релевантность документа = {relevance}")
     # elif action == "2":
     #     stat_action = input(
     #         "1 - Статистика по всем пользователям, 2 - Статистика по вам\n")

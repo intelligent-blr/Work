@@ -4,7 +4,7 @@ from config import my_base, table_name
 
 
 # все документы формата (id, str-название+описание)
-def fetch_and_print_table_rows(conn) -> list[tuple[int, str]]:
+def fetch_table_rows(conn) -> list[tuple[int, str]]:
     cursor = conn.cursor()
 
     query = f"""
@@ -27,12 +27,12 @@ def fetch_and_print_table_rows(conn) -> list[tuple[int, str]]:
     # for film_id, document in documents:
     #     document_str = document.lower()
     #     print(f"film_id: {film_id}, document: {document_str}")
-    print(documents)
+    # print(documents)
     return documents
 
 
 conn = get_connection("sakila", read_db=True)
-result = fetch_and_print_table_rows(conn)
+result = fetch_table_rows(conn)
 
 
 # def get_all_users_statistics() -> str:
@@ -129,3 +129,29 @@ def change_user_information(my_base: str, input_login: str,
     cursor.close()
     conn.close()
     print(f"Поле '{field}' успешно обновлено для пользователя {input_login}")
+
+
+# поиск фильмов по году и жанру
+def find_film_year_and_feature(year: int, feature: str):
+    conn = get_connection("sakila", read_db=True)
+    cursor = conn.cursor()
+
+    query = """
+        SELECT *
+        FROM film
+        WHERE release_year = %s
+        AND special_features LIKE %s
+    """
+
+    feature_search = f"%{feature}%"
+
+    cursor.execute(query, (year, feature_search))
+    results = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    if results:
+        return results
+    else:
+        return "По Вашему запросу ничего не найдено"
