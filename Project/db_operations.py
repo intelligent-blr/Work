@@ -20,7 +20,7 @@ def fetch_and_print_table_rows(conn) -> list[tuple[int, str]]:
         return []
 
     documents = [
-        (film_id, f"{title} {description}")
+        (film_id, set(f"{title} {description}".lower().split()))
         for film_id, title, description in rows
     ]
 
