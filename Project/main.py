@@ -49,8 +49,6 @@ def main():
                    "2 - Получить статистику\n3 - Изменить свои данные\n")
 
     if action == "1":
-        stop_words_input = input("Введите строку стоп слов: ")
-        stop_words = parse_stop_words(stop_words_input)
 
         # Получение документов
         if conn := get_connection("sakila"):

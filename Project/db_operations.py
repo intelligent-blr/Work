@@ -1,15 +1,17 @@
 from db_setup import get_connection
 
-from config import my_base
+from config import my_base, table_name
 
 
-def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
-    query = """
-            SELECT film_id, title, description, release_year, special_features
-            FROM film
-            """
-
+# все документы формата (id, str-название+описание)
+def fetch_and_print_table_rows(conn) -> list[tuple[int, str]]:
     cursor = conn.cursor()
+
+    query = f"""
+            SELECT film_id, title, description
+            FROM {table_name}
+    """
+
     cursor.execute(query)
     rows = cursor.fetchall()
 
@@ -17,18 +19,20 @@ def fetch_table_rows(conn, table_name: str) -> list[tuple[int, set[str]]]:
         print("По Вашему запросу ничего не найдено")
         return []
 
-    result = []
-    for row in rows:
-        film_id = row[0]
-        release_year = row[3]
-        combined_text = " ".join([str(row[1]), str(row[2]), str(row[4])])
-        word_set = set(combined_text.split())
-        result.append((film_id, word_set, release_year))
-    return result
+    documents = [
+        (film_id, f"{title} {description}")
+        for film_id, title, description in rows
+    ]
+
+    # for film_id, document in documents:
+    #     document_str = document.lower()
+    #     print(f"film_id: {film_id}, document: {document_str}")
+    print(documents)
+    return documents
 
 
-result = fetch_table_rows(get_connection("sakila"), "film")
-print("Найдено", result)
+conn = get_connection("sakila", read_db=True)
+result = fetch_and_print_table_rows(conn)
 
 
 # def get_all_users_statistics() -> str:
@@ -52,7 +56,7 @@ def user_exists_in_database(input_login: str) -> bool:
     return result is not None
 
 
-# поиск имени в фамилии в базе при существующем login
+# поиск имени и фамилии в базе при существующем login
 def fetch_user_info(input_login: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()

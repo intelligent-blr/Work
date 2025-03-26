@@ -9,3 +9,7 @@ dbconfig_read = {'host': 'ich-db.edu.itcareerhub.de',
                  }
 
 my_base = "Yuniou_300924"
+
+file_dir = r"D:\ICH\_Python Fundamentals\Work\Work\Project\stop_words.txt"
+
+table_name = "film"

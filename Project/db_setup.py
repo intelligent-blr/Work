@@ -95,7 +95,7 @@ def create_database():
             print("Соединение с MySQL закрыто")
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # create_database()
 
     # Проверка
