@@ -30,11 +30,6 @@ def find_documents(documents, stop_words, user_query) -> list[tuple[int, int]]:
         relevance = match_document(document, query_no_stop_words)
         if relevance > 0:
             result.append((film_id, relevance))
-            print(f"film_id: {film_id}, match_count: {relevance}")
-
-    if not result:
-        return "По Вашему запросу не найдено ни одного совпадения."
-
     return result
 
 

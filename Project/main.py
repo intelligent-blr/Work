@@ -87,7 +87,12 @@ def main():
                 documents = fetch_table_rows(conn)
 
                 films = find_documents(documents, stop_words, user_query)
-                print(films)
+                if isinstance(films, str):
+                        print(films)
+                else:
+                    print("\nНайденные фильмы (ID фильма, количество совпадений):")
+                    for film_id, match_count in films:
+                        print(f"ID: {film_id}, совпадений: {match_count}")
                 # if films == "По Вашему запросу не найдено ни одного совпадения.":
                 #     print(films)
                 # else:
