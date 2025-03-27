@@ -9,7 +9,7 @@ def fetch_table_rows(conn) -> list[tuple[int, str]]:
 
     query = f"""
             SELECT film_id, title, description
-            FROM {table_name}
+            FROM {table_name};
     """
 
     cursor.execute(query)
@@ -50,6 +50,7 @@ def user_exists_in_database(input_login: str) -> bool:
 
     cursor.close()
     conn.close()
+
     return result is not None
 
 
@@ -79,13 +80,14 @@ def add_user_to_database(login: str, first_name: str,
 
     insert_query = """
         INSERT INTO users (login, first_name, last_name, email)
-        VALUES (%s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s);
     """
     cursor.execute(insert_query, (login, first_name, last_name, email))
-
     conn.commit()
+
     cursor.close()
     conn.close()
+
     print(f"Пользователь {first_name} {last_name} добавлен в базу данных")
 
 
@@ -94,7 +96,7 @@ def fetch_user_email(email: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
-    query = "SELECT email FROM users WHERE email = %s"
+    query = "SELECT email FROM users WHERE email = %s;"
     cursor.execute(query, (email,))
     result = cursor.fetchone()
 
@@ -119,12 +121,13 @@ def change_user_information(my_base: str, input_login: str,
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
-    query = f"UPDATE users SET {field} = %s WHERE login = %s"
+    query = f"UPDATE users SET {field} = %s WHERE login = %s;"
     cursor.execute(query, (new_value, input_login))
-
     conn.commit()
+
     cursor.close()
     conn.close()
+
     print(f"Поле '{field}' успешно обновлено для пользователя {input_login}.")
 
 
@@ -166,12 +169,13 @@ def find_film_year(year):
     conn = get_connection("sakila", read_db=True)
     cursor = conn.cursor()
 
-    query = "SELECT title FROM film WHERE release_year = %s"
+    query = "SELECT title FROM film WHERE release_year = %s;"
     cursor.execute(query, [year])
     films = [row[0] for row in cursor.fetchall()]
 
     cursor.close()
     conn.close()
+
     return films
 
 
@@ -184,14 +188,49 @@ def find_film_genre(genre):
         SELECT title FROM film f
             JOIN film_category fc ON f.film_id = fc.film_id
             JOIN category c ON fc.category_id = c.category_id
-        WHERE LOWER(c.name) = %s
+        WHERE LOWER(c.name) = %s;
     """
     cursor.execute(query, [genre])
     films = [row[0] for row in cursor.fetchall()]
 
     cursor.close()
     conn.close()
+
     return films
+
+
+# записываем данные из запроса в таблицу
+def add_log_search_query(query: str, user_id: int, response: list):
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    response_str = "; ".join(response) if response else "Нет результатов"
+
+    insert_query = """
+        INSERT INTO queries (query, user_id, response)
+        VALUES (%s, %s, %s);
+    """
+    cursor.execute(insert_query, (query, user_id, response_str))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+
+# поиск user_id в таблице users
+def get_current_user_id(login: str):
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    query = "SELECT id FROM users WHERE login = %s;"
+    cursor.execute(query, (login,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return result[0] if result else None
+
 
 # films = find_film_year_and_genre(2012, "Drama")
 

@@ -7,6 +7,8 @@ from db_operations import (
     fetch_user_email,
     # get_all_users_statistics,
     # get_user_statistics,
+    add_log_search_query,
+    get_current_user_id,
     change_user_information,
     fetch_table_rows,
     find_film_year_and_genre)
@@ -81,6 +83,12 @@ def main():
                         print("\nНайденные фильмы: ")
                         for film in films:
                             print(film)
+
+                    user_id = get_current_user_id(input_login)
+                    search_query = f"{year}, {genre}"
+                    found_film_id = ", ".join(films) if films else "Нет результатов"
+                    add_log_search_query(search_query, user_id, found_film_id)
+
                 except ValueError:
                     print("Ошибка: Введите корректный год (целое число).")
 
@@ -100,17 +108,12 @@ def main():
                     for film_id, match_count in films:
                         print(f"ID: {film_id}, совпадений: {match_count}")
 
+                    user_id = get_current_user_id(input_login)
+                    search_query = user_query
+                    found_film_id = ", ".join(films) if films else "Нет результатов"
+                    add_log_search_query(search_query, user_id, found_film_id)
+
             # if choice == "3":  # статистика
-
-
-
-            # if conn := get_connection("sakila", read_db=True):
-            #     documents = fetch_table_rows(conn)
-            #     conn.close()
-            # else:
-            #     print("Не удалось подключиться к базе данных.")
-            #     return
-
 
     elif action == "3":
         while True:
