@@ -31,7 +31,7 @@ def create_struct_database():
                 user_name VARCHAR(50) NOT NULL,
                 first_name VARCHAR(50) NOT NULL,
                 last_name VARCHAR(50) NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',  
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки'
             )
         """)

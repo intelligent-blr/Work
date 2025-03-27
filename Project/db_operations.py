@@ -200,36 +200,21 @@ def find_film_genre(genre):
 
 
 # записываем данные из запроса в таблицу
-# def add_log_search_query(query: str, user_id: int, response: list):
-#     conn = get_connection(my_base)
-#     cursor = conn.cursor()
-
-#     response_str = "; ".join(response) if response else "Нет результатов"
-
-#     insert_query = """
-#         INSERT INTO queries (query, user_id, response)
-#         VALUES (%s, %s, %s);
-#     """
-#     print(f"Executing query: {insert_query}") # убрать - для отладки
-#     print(f"user_id = {user_id}") # убрать - для отладки
-#     cursor.execute(insert_query, (query, user_id, response_str))
-#     conn.commit()
-
-#     cursor.close()
-#     conn.close()
-def add_log_search_query(query: str, user_id: int):
+def add_log_search_query(query: str, user_id: int, found_film_ids: list):
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
     insert_query = """
-        INSERT INTO queries (query, user_id)
-        VALUES (%s, %s);
+        INSERT INTO queries (query, user_id, response)
+        VALUES (%s, %s, %s);
     """
-    cursor.execute(insert_query, (query, user_id))
+
+    cursor.execute(insert_query, (query, user_id, found_film_ids))
     conn.commit()
 
     cursor.close()
     conn.close()
+
 
 # поиск user_id в таблице users
 def get_current_user_id(login: str):

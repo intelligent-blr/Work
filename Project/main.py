@@ -86,10 +86,14 @@ def main():
                         for film in films:
                             print(film)
 
-                    # user_id = get_current_user_id(input_login)
-                    # search_query = f"{year}, {genre}"
-                    # found_film_id = ", ".join(films) if films else "Нет результатов"
-                    # add_log_search_query(search_query, user_id, found_film_id)
+                    found_film_ids = []
+                    found_film_ids = json.dumps([film for film in films])
+
+                    print(f"DEBUG JSON перед записью: {found_film_ids}")  # Проверка
+
+                    user_id = get_current_user_id(input_login)
+                    user_query = f"{year}, {genre}"
+                    add_log_search_query(user_query, user_id, found_film_ids)
 
                 except ValueError:
                     print("Ошибка: Введите корректный год (целое число).")
@@ -111,15 +115,14 @@ def main():
                     for film_id, match_count in films:
                         print(f"ID: {film_id}, совпадений: {match_count}")
 
-                    # found_film_ids = []
-                    # found_film_ids = json.dumps([film[0] for film in films])
+                    found_film_ids = []
+                    found_film_ids = json.dumps([film[0] for film in films])
 
-                    # print(f"DEBUG JSON перед записью: {found_film_ids}")  # Проверка
+                    print(f"DEBUG JSON перед записью: {found_film_ids}")  # Проверка
 
                     user_id = get_current_user_id(input_login)
-                    search_query = user_query
-                    add_log_search_query(search_query, user_id)
-                    # add_log_search_query(search_query, user_id, found_film_ids)
+
+                    add_log_search_query(user_query, user_id, found_film_ids)
 
             # if choice == "3":  # статистика
 
