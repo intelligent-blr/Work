@@ -20,6 +20,8 @@ from db_setup import (
 
 from search_enginee import parse_stop_words, find_documents, parse_query
 
+import json
+
 
 def main():
     if not database_is_exists(my_base):
@@ -84,10 +86,10 @@ def main():
                         for film in films:
                             print(film)
 
-                    user_id = get_current_user_id(input_login)
-                    search_query = f"{year}, {genre}"
-                    found_film_id = ", ".join(films) if films else "Нет результатов"
-                    add_log_search_query(search_query, user_id, found_film_id)
+                    # user_id = get_current_user_id(input_login)
+                    # search_query = f"{year}, {genre}"
+                    # found_film_id = ", ".join(films) if films else "Нет результатов"
+                    # add_log_search_query(search_query, user_id, found_film_id)
 
                 except ValueError:
                     print("Ошибка: Введите корректный год (целое число).")
@@ -100,6 +102,7 @@ def main():
                 documents = fetch_table_rows(conn)
 
                 films = find_documents(documents, stop_words, user_query)
+
                 if isinstance(films, str):
                     print(films)
                 else:
@@ -108,10 +111,14 @@ def main():
                     for film_id, match_count in films:
                         print(f"ID: {film_id}, совпадений: {match_count}")
 
+                    found_film_ids = []
+                    found_film_ids = json.dumps([film[0] for film in films])
+
+                    print(f"DEBUG JSON перед записью: {found_film_ids}")  # Проверка
+
                     user_id = get_current_user_id(input_login)
                     search_query = user_query
-                    found_film_id = ", ".join(films) if films else "Нет результатов"
-                    add_log_search_query(search_query, user_id, found_film_id)
+                    add_log_search_query(search_query, user_id, found_film_ids)
 
             # if choice == "3":  # статистика
 

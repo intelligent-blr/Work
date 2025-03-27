@@ -210,6 +210,8 @@ def add_log_search_query(query: str, user_id: int, response: list):
         INSERT INTO queries (query, user_id, response)
         VALUES (%s, %s, %s);
     """
+    print(f"Executing query: {insert_query}") # убрать - для отладки
+    print(f"user_id = {user_id}") # убрать - для отладки
     cursor.execute(insert_query, (query, user_id, response_str))
     conn.commit()
 
