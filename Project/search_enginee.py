@@ -1,5 +1,6 @@
 # парсим слова введенные от пользователя - stop_words
-def parse_query(user_query: str, stop_words: set[str]) -> set[str]:
+def parse_query_no_stop_words(user_query: str,
+                              stop_words: set[str]) -> set[str]:
     user_query = set(user_query.lower().split())
     relevant_words = user_query.difference(stop_words)
     return relevant_words
@@ -18,19 +19,13 @@ def parse_stop_words(filename: str) -> set[str]:
 
 
 # находим фильмы - -стоп слова и выводим с количеством совпадений
-def find_documents(documents, stop_words, user_query) -> list[tuple[int, int]]:
-    query_no_stop_words = parse_query(user_query, stop_words)
+def find_documents(documents: list[tuple[int, str]], stop_words: list[str],
+                   user_query: str) -> list[tuple[int, int]]:
+    query_no_stop_words = parse_query_no_stop_words(user_query, stop_words)
     result = []
+
     for film_id, document in documents:
         relevance = match_document(document, query_no_stop_words)
         if relevance > 0:
             result.append((film_id, relevance))
     return result
-
-
-# query = "zorro"
-# conn = get_connection("sakila", read_db=True)
-# documents = fetch_table_rows(conn)
-# stop_words = parse_stop_words(file_dir)
-# results = find_documents(documents, stop_words, query)
-# print(results)

@@ -88,7 +88,8 @@ def add_user_to_database(login: str, first_name: str,
     cursor.close()
     conn.close()
 
-    print(f"Пользователь {first_name} {last_name} добавлен в базу данных")
+    return True
+    # print(f"Пользователь {first_name} {last_name} добавлен в базу данных")
 
 
 # поиск существующего email
@@ -105,7 +106,6 @@ def fetch_user_email(email: str) -> dict[str, str]:
 
     if result:
         print("Данный email уже зарегистрирован. Пожалуйста, введите другой")
-        return {"email": result[0]}
     else:
         raise ValueError("Email не найден")
 
@@ -144,7 +144,7 @@ def find_film_year_and_genre(year: int, genre: str):
                 LEFT JOIN category c ON fc.category_id = c.category_id
             WHERE f.release_year = %s AND c.name = %s;
         """
-        params = (year, genre)
+        year_genre = (year, genre)
 
     elif year:
         return find_film_year(year)
@@ -155,7 +155,7 @@ def find_film_year_and_genre(year: int, genre: str):
     else:
         return []
 
-    cursor.execute(query, (params))
+    cursor.execute(query, year_genre)
     results = cursor.fetchall()
 
     cursor.close()
@@ -200,24 +200,36 @@ def find_film_genre(genre):
 
 
 # записываем данные из запроса в таблицу
-def add_log_search_query(query: str, user_id: int, response: list):
+# def add_log_search_query(query: str, user_id: int, response: list):
+#     conn = get_connection(my_base)
+#     cursor = conn.cursor()
+
+#     response_str = "; ".join(response) if response else "Нет результатов"
+
+#     insert_query = """
+#         INSERT INTO queries (query, user_id, response)
+#         VALUES (%s, %s, %s);
+#     """
+#     print(f"Executing query: {insert_query}") # убрать - для отладки
+#     print(f"user_id = {user_id}") # убрать - для отладки
+#     cursor.execute(insert_query, (query, user_id, response_str))
+#     conn.commit()
+
+#     cursor.close()
+#     conn.close()
+def add_log_search_query(query: str, user_id: int):
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
-    response_str = "; ".join(response) if response else "Нет результатов"
-
     insert_query = """
-        INSERT INTO queries (query, user_id, response)
-        VALUES (%s, %s, %s);
+        INSERT INTO queries (query, user_id)
+        VALUES (%s, %s);
     """
-    print(f"Executing query: {insert_query}") # убрать - для отладки
-    print(f"user_id = {user_id}") # убрать - для отладки
-    cursor.execute(insert_query, (query, user_id, response_str))
+    cursor.execute(insert_query, (query, user_id))
     conn.commit()
 
     cursor.close()
     conn.close()
-
 
 # поиск user_id в таблице users
 def get_current_user_id(login: str):
@@ -232,13 +244,3 @@ def get_current_user_id(login: str):
     conn.close()
 
     return result[0] if result else None
-
-
-# films = find_film_year_and_genre(2012, "Drama")
-
-# if films:
-#     print("Найденные фильмы:")
-#     for film in films:
-#         print(film)
-# else:
-#     print("По Вашему запросу ничего не найдено.")
