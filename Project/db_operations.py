@@ -242,7 +242,7 @@ def get_current_user_id(login: str):
     return result[0] if result else None
 
 
-# выгружаем все film_id, найденные из запросов пользвоателей
+# выгружаем все film_id, найденные из запросов пользователей
 def all_films_from_query():
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -263,16 +263,35 @@ def all_query_users():
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
-    query = "SELECT query FROM queries;"
+    queries = "SELECT query FROM queries;"
 
-    cursor.execute(query)
-    responses = cursor.fetchall()
+    cursor.execute(queries)
+    queries = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return [response[0] for response in responses]
+    return [query[0] for query in queries]
 
+
+# выгружаем все query одного пользователя для статистики
+def all_query_one_user(input_login):
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    queries = """
+        SELECT t1.query
+            FROM queries t1
+            JOIN users t2 ON t1.user_id = t2.id AND login = %s;
+    """
+
+    cursor.execute(queries, (input_login,))
+    queries = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [query[0] for query in queries]
 
 # queries = all_query_users()
 # print(queries)

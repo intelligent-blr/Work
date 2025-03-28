@@ -50,6 +50,7 @@ def films_rating(query_film_ids):
 # считаем повторения в запросах пользователей
 def rating_query_users(queries):
     query_counts = Counter(queries)
+    sorted_queries = query_counts.most_common()
 
-    for query, count in query_counts.items():
-        print(f"Запрос: {query}, Повторения: {count}")
+    for query, count in sorted_queries:
+        print(f"Запрос: {query}, Количество повторений: {count}")

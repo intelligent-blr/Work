@@ -10,6 +10,7 @@ from db_operations import (
     add_log_search_query,
     # all_films_from_query,
     all_query_users,
+    all_query_one_user,
     get_current_user_id,
     change_user_information,
     fetch_table_rows,
@@ -146,7 +147,20 @@ def main():
 
                     rating_query_users(queries)
 
-                # if choice == "3":  # статистика
+        if action == "2":
+            while True:
+                print("\nВарианты для поиска:\n1 - Ваша статистика "
+                      "\n2 - Статистика по всем пользователям\n0 - Назад")
+                choice = input("Выберите вариант поиска: ")
+
+                if choice == "0":
+                    print("Выход из режима поиска.")
+                    break
+
+                if choice == "1":
+                    statistik_user = all_query_one_user(input_login)
+                    print("\nСписок ваших запросов:")
+                    print("\n".join(statistik_user))
 
         elif action == "3":
             while True:
