@@ -89,7 +89,8 @@ def main():
                     found_film_ids = []
                     found_film_ids = json.dumps([film for film in films])
 
-                    print(f"DEBUG JSON перед записью: {found_film_ids}")  # Проверка
+                    # Проверка
+                    print(f"DEBUG JSON перед записью: {found_film_ids}")
 
                     user_id = get_current_user_id(input_login)
                     user_query = f"{year}, {genre}"
@@ -110,15 +111,20 @@ def main():
                 if isinstance(films, str):
                     print(films)
                 else:
+                    films_sorted = sorted(
+                        films, key=lambda x: x[1], reverse=True)
+
                     print("\nНайденные фильмы (id фильма, "
                           "количество совпадений):")
-                    for film_id, match_count in films:
+                    for film_id, match_count in films_sorted:
                         print(f"ID: {film_id}, совпадений: {match_count}")
 
                     found_film_ids = []
-                    found_film_ids = json.dumps([film[0] for film in films])
+                    found_film_ids = json.dumps(
+                        [film[0] for film in films_sorted])
 
-                    print(f"DEBUG JSON перед записью: {found_film_ids}")  # Проверка
+                    # Проверка
+                    print(f"DEBUG JSON перед записью: {found_film_ids}")
 
                     user_id = get_current_user_id(input_login)
 
