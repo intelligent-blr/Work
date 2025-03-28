@@ -125,7 +125,8 @@ def change_user_information(my_base: str, input_login: str,
     cursor.close()
     conn.close()
 
-    print(f"Поле '{field}' успешно обновлено для пользователя {input_login}.")
+    print(f"Данные по '{field}' успешно обновлены "
+          f"для пользователя {input_login}.")
 
 
 # поиск фильмов по году и жанру
