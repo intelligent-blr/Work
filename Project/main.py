@@ -48,14 +48,16 @@ def main():
 
         while True:
             email = input("Последним шагом необходимо ввести email: ")
-            try:
-                fetch_user_email(email)
+
+            if fetch_user_email(email):
+                print("Данный email уже зарегистрирован. "
+                      "Пожалуйста, введите другой")
                 choice = input(
                     "Хотите ввести другой email? (да/нет): ").lower()
                 if choice != "да":
                     print("К сожалению, вы не выполнили регистрацию")
                     return
-            except ValueError:
+            else:
                 break
 
         add_user_to_database(input_login, first_name, last_name, email)
