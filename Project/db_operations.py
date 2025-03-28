@@ -138,7 +138,9 @@ def find_film_year_and_genre(year: int, genre: str):
 
     if year and genre:
         query = """
-            SELECT f.title
+            SELECT
+                f.film_id
+                , f.title
             FROM film f
                 LEFT JOIN film_category fc ON f.film_id = fc.film_id
                 LEFT JOIN category c ON fc.category_id = c.category_id
@@ -161,7 +163,7 @@ def find_film_year_and_genre(year: int, genre: str):
     cursor.close()
     conn.close()
 
-    return [film[0] for film in results]
+    return [(film[0], film[1]) for film in results]
 
 
 # ищем только по году
@@ -169,9 +171,9 @@ def find_film_year(year):
     conn = get_connection("sakila", read_db=True)
     cursor = conn.cursor()
 
-    query = "SELECT title FROM film WHERE release_year = %s;"
+    query = "SELECT film_id, title FROM film WHERE release_year = %s;"
     cursor.execute(query, [year])
-    films = [row[0] for row in cursor.fetchall()]
+    films = [(film[0], film[1]) for film in cursor.fetchall()]
 
     cursor.close()
     conn.close()
@@ -185,13 +187,16 @@ def find_film_genre(genre):
     cursor = conn.cursor()
 
     query = """
-        SELECT title FROM film f
+        SELECT
+            f.film_id
+            , f.title
+        FROM film f
             JOIN film_category fc ON f.film_id = fc.film_id
             JOIN category c ON fc.category_id = c.category_id
         WHERE LOWER(c.name) = %s;
     """
     cursor.execute(query, [genre])
-    films = [row[0] for row in cursor.fetchall()]
+    films = [(film[0], film[1]) for film in cursor.fetchall()]
 
     cursor.close()
     conn.close()

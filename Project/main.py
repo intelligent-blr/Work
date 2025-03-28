@@ -53,105 +53,115 @@ def main():
         print(f"Регистрация прошла успешно! Добро пожаловать "
               f"{first_name} {last_name}!")
 
-    action = input("Выберите доступное действие:\n1 - Найти фильм\n"
-                   "2 - Получить статистику\n3 - Изменить свои данные\n")
+    while True:
+        action = input("Выберите доступное действие:\n1 - Найти фильм\n"
+                       "2 - Получить статистику\n3 - Изменить свои данные\n"
+                       "0 - Выход из программы.\n")
 
-    if action == "1":
-        while True:
-            print("\nВарианты для поиска:\n1 - Найти фильмы по году и жанру\n"
-                  "2 - Ввести описание фильма\n3 - Вывести статистику по "
-                  "самым популярным запросам\n0 - Exit")
-            choice = input("Выберите вариант поиска: ")
+        if action == "1":
+            while True:
+                print("\nВарианты для поиска:\n1 - Найти фильмы по году и жанру\n"
+                      "2 - Ввести описание фильма\n3 - Вывести статистику по "
+                      "самым популярным запросам\n0 - Назад")
+                choice = input("Выберите вариант поиска: ")
 
-            if choice == "0":
-                print("Выход из режима поиска.")
-                break
+                if choice == "0":
+                    print("Выход из режима поиска.")
+                    break
 
-            if choice == "1":  # год и жанр
-                try:
-                    input_year = input("Введите год выпуска фильма "
-                                       "(необязательный критерий): ")
-                    input_genre = input("Введите жанр фильма "
-                                        "(необязательный критерий): ").lower()
+                if choice == "1":
+                    try:
+                        input_year = input("Введите год выпуска фильма "
+                                           "(если известен): ")
+                        input_genre = input("Введите жанр фильма "
+                                            "(если знаете): ").lower()
 
-                    year = int(input_year) if input_year else None
-                    genre = input_genre if input_genre else None
+                        year = int(input_year) if input_year else None
+                        genre = input_genre if input_genre else None
 
-                    films = find_film_year_and_genre(year, genre)
+                        films = find_film_year_and_genre(year, genre)
 
-                    if not films:
-                        print("По вашему запросу ничего не найдено.")
+                        if not films:
+                            print("По вашему запросу ничего не найдено.")
+                        else:
+                            print("\nНайденные фильмы: ")
+                            for _, film_title in films:
+                                print(film_title)
+
+                        found_film_ids = json.dumps(
+                            [film_id for film_id, _ in films])
+
+                        # Проверка
+                        # print(f"DEBUG JSON перед записью: {found_film_ids}")
+
+                        user_id = get_current_user_id(input_login)
+
+                        user_query = f"{year}, {genre}"
+
+                        add_log_search_query(
+                            user_query, user_id, found_film_ids)
+
+                    except ValueError:
+                        print("Ошибка: Введите корректный год (целое число).")
+
+                if choice == "2":  # ключевые слова
+                    conn = get_connection("sakila", read_db=True)
+                    user_query = input("Введите описание фильма: ")
+                    stop_words = parse_stop_words(file_dir)
+
+                    documents = fetch_table_rows(conn)
+
+                    films = find_documents(documents, stop_words, user_query)
+
+                    if isinstance(films, str):
+                        print(films)
                     else:
-                        print("\nНайденные фильмы: ")
-                        for film in films:
-                            print(film)
+                        films_sorted = sorted(
+                            films, key=lambda x: x[1], reverse=True)
 
-                    found_film_ids = []
-                    found_film_ids = json.dumps([film for film in films])
+                        print("\nНайденные фильмы (id фильма, "
+                              "количество совпадений):")
+                        for film_id, match_count in films_sorted:
+                            print(f"ID: {film_id}, совпадений: {match_count}")
 
-                    # Проверка
-                    print(f"DEBUG JSON перед записью: {found_film_ids}")
+                        found_film_ids = json.dumps(
+                            [film[0] for film in films_sorted])
 
-                    user_id = get_current_user_id(input_login)
-                    user_query = f"{year}, {genre}"
-                    add_log_search_query(user_query, user_id, found_film_ids)
+                        # Проверка
+                        # print(f"DEBUG JSON перед записью: {found_film_ids}")
 
-                except ValueError:
-                    print("Ошибка: Введите корректный год (целое число).")
+                        user_id = get_current_user_id(input_login)
 
-            if choice == "2":  # ключевые слова
-                conn = get_connection("sakila", read_db=True)
-                user_query = input("Введите описание фильма: ")
-                stop_words = parse_stop_words(file_dir)
+                        add_log_search_query(
+                            user_query, user_id, found_film_ids)
 
-                documents = fetch_table_rows(conn)
+                # if choice == "3":  # статистика
 
-                films = find_documents(documents, stop_words, user_query)
+        elif action == "3":
+            while True:
+                print("\nВарианты для изменения:\n1 - Изменить login\n"
+                      "2 - Изменить first_name\n3 - Изменить last_name\n"
+                      "4 - Изменить email\n0 - Назад")
+                field_action = input("Выберите изменение: ")
 
-                if isinstance(films, str):
-                    print(films)
-                else:
-                    films_sorted = sorted(
-                        films, key=lambda x: x[1], reverse=True)
+                if field_action == "0":
+                    print("Выход из режима обновления данных.")
+                    break
 
-                    print("\nНайденные фильмы (id фильма, "
-                          "количество совпадений):")
-                    for film_id, match_count in films_sorted:
-                        print(f"ID: {film_id}, совпадений: {match_count}")
+                field_map = {"1": "login", "2": "first_name",
+                             "3": "last_name", "4": "email"}
 
-                    found_film_ids = []
-                    found_film_ids = json.dumps(
-                        [film[0] for film in films_sorted])
+                if field_action in field_map:
+                    new_value = input(f"Введите новое значение для "
+                                      f"{field_map[field_action]}: ")
 
-                    # Проверка
-                    print(f"DEBUG JSON перед записью: {found_film_ids}")
+                    change_user_information(my_base, input_login,
+                                            field_map[field_action], new_value)
 
-                    user_id = get_current_user_id(input_login)
+        elif action == "0":
+            print("Выход из программы.")
+            break
 
-                    add_log_search_query(user_query, user_id, found_film_ids)
-
-            # if choice == "3":  # статистика
-
-    elif action == "3":
-        while True:
-            print("\nВарианты для изменения:\n1 - Изменить login\n"
-                  "2 - Изменить first_name\n3 - Изменить last_name\n"
-                  "4 - Изменить email\n0 - Exit")
-            field_action = input("Выберите изменение: ")
-
-            if field_action == "0":
-                print("Выход из режима обновления данных.")
-                break
-
-            field_map = {"1": "login", "2": "first_name",
-                         "3": "last_name", "4": "email"}
-
-            if field_action in field_map:
-                new_value = input(f"Введите новое значение для "
-                                  f"{field_map[field_action]}: ")
-
-                change_user_information(my_base, input_login,
-                                        field_map[field_action], new_value)
             # else:
             #     print("Неверный ввод, попробуйте снова")
     #     else:
