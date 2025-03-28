@@ -93,11 +93,3 @@ def create_database():
             cursor.close()
             conn.close()
             print("Соединение с MySQL закрыто.")
-
-
-# if __name__ == '__main__':
-    # create_database()
-
-    # Проверка
-    # conn = get_connection()
-    # conn = get_connection(read_db=True)

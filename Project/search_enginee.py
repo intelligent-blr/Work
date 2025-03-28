@@ -1,5 +1,6 @@
 from collections import Counter
 
+
 # парсим слова введенные от пользователя - stop_words
 def parse_query_no_stop_words(user_query: str,
                               stop_words: set[str]) -> set[str]:

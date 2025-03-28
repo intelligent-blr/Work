@@ -5,8 +5,6 @@ from db_operations import (
     user_exists_in_database,
     fetch_user_info,
     fetch_user_email,
-    # get_all_users_statistics,
-    # get_user_statistics,
     add_log_search_query,
     # all_films_from_query,
     all_query_users,
@@ -28,7 +26,6 @@ from search_enginee import (
     rating_query_users)
 
 import json
-# from collections import Counter
 
 
 def main():
@@ -69,8 +66,9 @@ def main():
         if action == "1":
             while True:
                 print("\nВарианты для поиска:\n1 - Найти фильмы по году "
-                      "и жанру\n2 - Ввести описание фильма\n3 - Вывести "
-                      "статистику по самым популярным запросам\n0 - Назад")
+                      "и жанру\n2 - Поиск фильма по ключевым словам"
+                      "\n3 - Вывести статистику по самым популярным "
+                      "запросам\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -93,14 +91,12 @@ def main():
                             print("По вашему запросу ничего не найдено.")
                         else:
                             print("\nНайденные фильмы: ")
+
                             for _, film_title in films:
                                 print(film_title)
 
                         found_film_ids = json.dumps(
                             [film_id for film_id, _ in films])
-
-                        # Проверка
-                        # print(f"DEBUG JSON перед записью: {found_film_ids}")
 
                         user_id = get_current_user_id(input_login)
 
@@ -114,6 +110,7 @@ def main():
 
                 if choice == "2":
                     user_query = input("Введите описание фильма: ")
+
                     stop_words = parse_stop_words(file_dir)
 
                     documents = fetch_table_rows()
@@ -128,14 +125,12 @@ def main():
 
                         print("\nНайденные фильмы (id фильма, "
                               "количество совпадений):")
+
                         for film_id, match_count in films_sorted:
-                            print(f"ID: {film_id}, совпадений: {match_count}")
+                            print(f"ID: {film_id}, совпадения: {match_count}")
 
                         found_film_ids = json.dumps(
                             [film[0] for film in films_sorted])
-
-                        # Проверка
-                        # print(f"DEBUG JSON перед записью: {found_film_ids}")
 
                         user_id = get_current_user_id(input_login)
 
@@ -158,9 +153,16 @@ def main():
                     break
 
                 if choice == "1":
-                    statistik_user = all_query_one_user(input_login)
+                    statistics_user = all_query_one_user(input_login)
+
                     print("\nСписок ваших запросов:")
-                    print("\n".join(statistik_user))
+                    print("\n".join(statistics_user))
+
+                if choice == "2":
+                    statistics_all_users = all_query_users()
+
+                    print("\nСписок запросов всех пользователей:")
+                    print("\n".join(statistics_all_users))
 
         elif action == "3":
             while True:
@@ -186,11 +188,6 @@ def main():
         elif action == "0":
             print("Выход из программы.")
             break
-
-            # else:
-            #     print("Неверный ввод, попробуйте снова")
-    #     else:
-    #         print("Неверный ввод")
 
 
 if __name__ == "__main__":

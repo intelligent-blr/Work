@@ -1,13 +1,11 @@
 from db_setup import get_connection
 
-from config import my_base, table_name
-
-from collections import Counter
+from config import my_base, table_name, find_base
 
 
 # все документы формата (id, str-название+описание)
 def fetch_table_rows() -> list[tuple[int, str]]:
-    conn = get_connection("sakila", read_db=True)
+    conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
     query = f"""
@@ -37,13 +35,6 @@ def fetch_table_rows() -> list[tuple[int, str]]:
 # result = fetch_table_rows(conn)
 # print(result)
 
-
-# def get_all_users_statistics() -> str:
-#     return "Статистика по всем пользователям"
-
-
-# def get_user_statistics(username: str) -> str:
-#     return "Статистика по текущему пользователю"
 
 # проверка существования login в системе
 def user_exists_in_database(input_login: str) -> bool:
@@ -139,7 +130,7 @@ def change_user_information(my_base: str, input_login: str,
 
 # поиск фильмов по году и жанру
 def find_film_year_and_genre(year: int, genre: str):
-    conn = get_connection("sakila", read_db=True)
+    conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
     if year and genre:
@@ -174,7 +165,7 @@ def find_film_year_and_genre(year: int, genre: str):
 
 # ищем только по году
 def find_film_year(year):
-    conn = get_connection("sakila", read_db=True)
+    conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
     query = "SELECT film_id, title FROM film WHERE release_year = %s;"
@@ -189,7 +180,7 @@ def find_film_year(year):
 
 # ищем только по жанру
 def find_film_genre(genre):
-    conn = get_connection("sakila", read_db=True)
+    conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
     query = """
@@ -292,6 +283,3 @@ def all_query_one_user(input_login):
     conn.close()
 
     return [query[0] for query in queries]
-
-# queries = all_query_users()
-# print(queries)
