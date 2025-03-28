@@ -1,6 +1,6 @@
 from db_setup import get_connection
 
-from config import my_base, table_name, find_base
+from config import my_base, find_base
 
 
 # все документы формата (id, str-название+описание)
@@ -8,9 +8,9 @@ def fetch_table_rows() -> list[tuple[int, str]]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
-    query = f"""
+    query = """
             SELECT film_id, title, description
-            FROM {table_name};
+            FROM film;
     """
 
     cursor.execute(query)
