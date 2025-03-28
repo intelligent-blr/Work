@@ -1,5 +1,7 @@
 from config import my_base, file_dir
 
+import re
+
 from db_operations import (
     add_user_to_database,
     user_exists_in_database,
@@ -34,7 +36,9 @@ def main():
 
     input_login = input("Для входа в систему введите ваш логин: ")
     if user_exists_in_database(input_login):
+
         login_data = fetch_user_info(input_login)
+
         print(f"Добро пожаловать {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
@@ -179,11 +183,44 @@ def main():
                              "3": "last_name", "4": "email"}
 
                 if field_action in field_map:
+                    field_name = field_map[field_action]
+
+                while True:
                     new_value = input(f"Введите новое значение для "
-                                      f"{field_map[field_action]}: ")
+                                      f"{field_name}: ")
+
+                    if not new_value:
+                        print(f"Ошибка: {field_name} не может быть пустым.")
+                        continue
+
+                    if field_name == "login":
+                        if user_exists_in_database(new_value):
+                            print("Данный логин уже существует, "
+                                  "попробуйте другой.")
+                            continue
+
+                        if len(new_value) < 5:
+                            print("Логин должен содержать "
+                                  "не менее 5 символов.")
+                            continue
+
+                    if field_name == "email":
+                        email_pattern = r'^[a-zA-Z0-9_.+-]+' \
+                                        r'@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+
+                        if not re.match(email_pattern, new_value):
+                            print("Ошибка: некорректный email.")
+                            continue
+
+                        if fetch_user_email(new_value):
+                            print("Данный email уже зарегистрирован. "
+                                  "Пожалуйста, введите другой")
+                            continue
 
                     change_user_information(my_base, input_login,
-                                            field_map[field_action], new_value)
+                                            field_name, new_value)
+
+                    break
 
         elif action == "0":
             print("Выход из программы.")

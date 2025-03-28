@@ -86,7 +86,6 @@ def add_user_to_database(login: str, first_name: str,
     conn.close()
 
     return True
-    # print(f"Пользователь {first_name} {last_name} добавлен в базу данных")
 
 
 # поиск существующего email
@@ -102,9 +101,9 @@ def fetch_user_email(email: str) -> dict[str, str]:
     conn.close()
 
     if result:
-        print("Данный email уже зарегистрирован. Пожалуйста, введите другой")
+        return True
     else:
-        raise ValueError("Email не найден")
+        return False
 
 
 # изменение информации о пользователе
