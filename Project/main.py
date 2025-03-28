@@ -8,19 +8,26 @@ from db_operations import (
     # get_all_users_statistics,
     # get_user_statistics,
     add_log_search_query,
+    # all_films_from_query,
+    all_query_users,
     get_current_user_id,
     change_user_information,
     fetch_table_rows,
     find_film_year_and_genre)
 
 from db_setup import (
-    get_connection,
+    # get_connection,
     create_database,
     database_is_exists)
 
-from search_enginee import parse_stop_words, find_documents
+from search_enginee import (
+    parse_stop_words,
+    find_documents,
+    # films_rating,
+    rating_query_users)
 
 import json
+# from collections import Counter
 
 
 def main():
@@ -60,9 +67,9 @@ def main():
 
         if action == "1":
             while True:
-                print("\nВарианты для поиска:\n1 - Найти фильмы по году и жанру\n"
-                      "2 - Ввести описание фильма\n3 - Вывести статистику по "
-                      "самым популярным запросам\n0 - Назад")
+                print("\nВарианты для поиска:\n1 - Найти фильмы по году "
+                      "и жанру\n2 - Ввести описание фильма\n3 - Вывести "
+                      "статистику по самым популярным запросам\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -104,12 +111,11 @@ def main():
                     except ValueError:
                         print("Ошибка: Введите корректный год (целое число).")
 
-                if choice == "2":  # ключевые слова
-                    conn = get_connection("sakila", read_db=True)
+                if choice == "2":
                     user_query = input("Введите описание фильма: ")
                     stop_words = parse_stop_words(file_dir)
 
-                    documents = fetch_table_rows(conn)
+                    documents = fetch_table_rows()
 
                     films = find_documents(documents, stop_words, user_query)
 
@@ -134,6 +140,11 @@ def main():
 
                         add_log_search_query(
                             user_query, user_id, found_film_ids)
+
+                if choice == "3":
+                    queries = all_query_users()
+
+                    rating_query_users(queries)
 
                 # if choice == "3":  # статистика
 

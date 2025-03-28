@@ -2,9 +2,12 @@ from db_setup import get_connection
 
 from config import my_base, table_name
 
+from collections import Counter
+
 
 # все документы формата (id, str-название+описание)
-def fetch_table_rows(conn) -> list[tuple[int, str]]:
+def fetch_table_rows() -> list[tuple[int, str]]:
+    conn = get_connection("sakila", read_db=True)
     cursor = conn.cursor()
 
     query = f"""
@@ -23,6 +26,9 @@ def fetch_table_rows(conn) -> list[tuple[int, str]]:
         (film_id, set(f"{title} {description}".lower().split()))
         for film_id, title, description in rows
     ]
+
+    cursor.close()
+    conn.close()
 
     return documents
 
@@ -234,3 +240,39 @@ def get_current_user_id(login: str):
     conn.close()
 
     return result[0] if result else None
+
+
+# выгружаем все film_id, найденные из запросов пользвоателей
+def all_films_from_query():
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    query = "SELECT response FROM queries;"
+
+    cursor.execute(query)
+    responses = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [response[0] for response in responses]
+
+
+# выгружаем все query пользователей для статистики
+def all_query_users():
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    query = "SELECT query FROM queries;"
+
+    cursor.execute(query)
+    responses = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [response[0] for response in responses]
+
+
+# queries = all_query_users()
+# print(queries)
