@@ -12,7 +12,6 @@ def fetch_table_rows() -> list[tuple[int, str]]:
             SELECT film_id, title, description
             FROM film;
     """
-
     cursor.execute(query)
     rows = cursor.fetchall()
 
@@ -27,13 +26,7 @@ def fetch_table_rows() -> list[tuple[int, str]]:
 
     cursor.close()
     conn.close()
-
     return documents
-
-
-# conn = get_connection("sakila", read_db=True)
-# result = fetch_table_rows(conn)
-# print(result)
 
 
 # проверка существования login в системе
@@ -85,8 +78,6 @@ def add_user_to_database(login: str, first_name: str,
     cursor.close()
     conn.close()
 
-    return True
-
 
 # поиск существующего email
 def fetch_user_email(email: str) -> dict[str, str]:
@@ -126,7 +117,7 @@ def change_user_information(my_base: str, input_login: str,
 
 
 # поиск фильмов по году и жанру
-def find_film_year_and_genre(year: int, genre: str):
+def find_film_year_and_genre(year: int, genre: str) -> list[tuple[int, str]]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
@@ -140,7 +131,7 @@ def find_film_year_and_genre(year: int, genre: str):
                 LEFT JOIN category c ON fc.category_id = c.category_id
             WHERE f.release_year = %s AND c.name = %s;
         """
-        year_genre = (year, genre)
+        cursor.execute(query, (year, genre))
 
     elif year:
         return find_film_year(year)
@@ -151,9 +142,7 @@ def find_film_year_and_genre(year: int, genre: str):
     else:
         return []
 
-    cursor.execute(query, year_genre)
     results = cursor.fetchall()
-
     cursor.close()
     conn.close()
 
@@ -161,13 +150,14 @@ def find_film_year_and_genre(year: int, genre: str):
 
 
 # ищем только по году
-def find_film_year(year):
+def find_film_year(year: int):
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
     query = "SELECT film_id, title FROM film WHERE release_year = %s;"
     cursor.execute(query, [year])
-    films = [(film[0], film[1]) for film in cursor.fetchall()]
+    films = cursor.fetchall()
+    # films = [(film[0], film[1]) for film in cursor.fetchall()]
 
     cursor.close()
     conn.close()
@@ -176,7 +166,7 @@ def find_film_year(year):
 
 
 # ищем только по жанру
-def find_film_genre(genre):
+def find_film_genre(genre: str):
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
@@ -190,7 +180,8 @@ def find_film_genre(genre):
         WHERE LOWER(c.name) = %s;
     """
     cursor.execute(query, [genre])
-    films = [(film[0], film[1]) for film in cursor.fetchall()]
+    films = cursor.fetchall()
+    # films = [(film[0], film[1]) for film in cursor.fetchall()]
 
     cursor.close()
     conn.close()
@@ -207,7 +198,6 @@ def add_log_search_query(query: str, user_id: int, found_film_ids: list):
         INSERT INTO queries (query, user_id, response)
         VALUES (%s, %s, %s);
     """
-
     cursor.execute(insert_query, (query, user_id, found_film_ids))
     conn.commit()
 
@@ -236,7 +226,6 @@ def all_films_from_query():
     cursor = conn.cursor()
 
     query = "SELECT response FROM queries;"
-
     cursor.execute(query)
     responses = cursor.fetchall()
 
@@ -252,7 +241,6 @@ def all_query_users():
     cursor = conn.cursor()
 
     queries = "SELECT query FROM queries;"
-
     cursor.execute(queries)
     queries = cursor.fetchall()
 
@@ -272,7 +260,6 @@ def all_query_one_user(input_login):
             FROM queries t1
             JOIN users t2 ON t1.user_id = t2.id AND login = %s;
     """
-
     cursor.execute(queries, (input_login,))
     queries = cursor.fetchall()
 

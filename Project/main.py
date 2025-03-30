@@ -61,6 +61,7 @@ def main():
                 break
 
         add_user_to_database(input_login, first_name, last_name, email)
+
         print(f"Регистрация прошла успешно! Добро пожаловать "
               f"{first_name} {last_name}!")
 
