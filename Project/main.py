@@ -37,10 +37,9 @@ def main():
         create_database()
 
     input_login = input("Для входа в систему введите ваш логин: ")
+
     if user_exists_in_database(input_login):
-
         login_data = fetch_user_info(input_login)
-
         print(f"Добро пожаловать {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
@@ -96,10 +95,12 @@ def main():
 
         if action == "1":
             while True:
-                print("\nВарианты для поиска:\n1 - Найти фильмы по году "
-                      "и жанру\n2 - Поиск фильма по ключевым словам"
+                print("\nВарианты для поиска:\n"
+                      "\n1 - Найти фильмы по году и жанру"
+                      "\n2 - Поиск фильма по ключевым словам"
                       "\n3 - Поиск фильма по фамилии актера"
-                      "\n4 - Поиск фильмов по популярности\n0 - Назад")
+                      "\n4 - Поиск фильмов по популярности"
+                      "\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -143,12 +144,11 @@ def main():
                     user_query = input("Введите описание фильма: ")
 
                     stop_words = parse_stop_words(file_dir)
-
                     documents = fetch_table_rows()
 
                     films = find_documents(documents, stop_words, user_query)
 
-                    if isinstance(films, str):
+                    if isinstance(films):
                         print(films)
                     else:
                         films_sorted = sorted(
@@ -171,6 +171,7 @@ def main():
                 if choice == "3":
                     input_actor = input("Введите фамилию актёра: ").upper()
                     films_from_actor = find_films_from_actor(input_actor)
+
                     if films_from_actor:
                         print("\n".join(films_from_actor))
                     else:
@@ -178,9 +179,7 @@ def main():
 
                 if choice == "4":
                     query_film_ids = all_films_from_query()
-
                     film_id_and_count = films_rating(query_film_ids)
-
                     all_film_titles = find_all_films_and_film_id()
 
                     for film_id, count in film_id_and_count:
@@ -190,10 +189,11 @@ def main():
 
         if action == "2":
             while True:
-                print("\nВарианты для поиска:\n1 - Ваша статистика "
+                print("\nВарианты для поиска:\n"
+                      "\n1 - Ваша статистика "
                       "\n2 - Статистика по всем пользователям"
-                      "\n3 - Вывести статистику по самым популярным "
-                      "запросам\n0 - Назад")
+                      "\n3 - Вывести статистику по самым популярным запросам"
+                      "\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -215,22 +215,28 @@ def main():
                 if choice == "3":
 
                     queries = all_query_users()
-
                     rating_query_users(queries)
 
         elif action == "3":
             while True:
-                print("\nВарианты для изменения:\n1 - Изменить login\n"
-                      "2 - Изменить first_name\n3 - Изменить last_name\n"
-                      "4 - Изменить email\n0 - Назад")
+                print("\nВарианты для изменения:\n"
+                      "\n1 - Изменить login"
+                      "\n2 - Изменить first_name"
+                      "\n3 - Изменить last_name"
+                      "\n4 - Изменить email"
+                      "\n0 - Назад")
                 field_action = input("Выберите изменение: ")
 
                 if field_action == "0":
                     print("Выход из режима обновления данных.")
                     break
 
-                field_map = {"1": "login", "2": "first_name",
-                             "3": "last_name", "4": "email"}
+                field_map = {
+                    "1": "login",
+                    "2": "first_name",
+                    "3": "last_name",
+                    "4": "email",
+                }
 
                 if field_action in field_map:
                     field_name = field_map[field_action]
