@@ -207,7 +207,7 @@ def add_log_search_query(query: str, user_id: int, found_film_ids: list):
 
 
 # поиск user_id в таблице users
-def get_current_user_id(login: str):
+def find_current_user_id(login: str):
     conn = get_connection(my_base)
     cursor = conn.cursor()
 

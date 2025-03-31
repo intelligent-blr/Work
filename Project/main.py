@@ -1,34 +1,35 @@
 from config import my_base, file_dir
-
 import re
+import json
 
 from db_operations import (
-    add_user_to_database,
-    user_exists_in_database,
-    fetch_user_info,
-    fetch_user_email,
     add_log_search_query,
-    find_all_films_and_film_id,
-    all_query_users,
+    add_user_to_database,
     all_query_one_user,
-    get_current_user_id,
-    find_films_from_actor,
+    all_query_users,
     all_films_from_query,
     change_user_information,
     fetch_table_rows,
-    find_film_year_and_genre)
+    fetch_user_email,
+    fetch_user_info,
+    find_all_films_and_film_id,
+    find_films_from_actor,
+    find_film_year_and_genre,
+    find_current_user_id,
+    user_exists_in_database,
+)
 
 from db_setup import (
     create_database,
-    database_is_exists)
+    database_is_exists,
+)
 
 from search_enginee import (
-    parse_stop_words,
-    find_documents,
     films_rating,
-    rating_query_users)
-
-import json
+    find_documents,
+    parse_stop_words,
+    rating_query_users,
+)
 
 
 def main():
@@ -128,7 +129,7 @@ def main():
                         found_film_ids = json.dumps(
                             [film_id for film_id, _ in films])
 
-                        user_id = get_current_user_id(input_login)
+                        user_id = find_current_user_id(input_login)
 
                         user_query = f"{year}, {genre}"
 
@@ -162,7 +163,7 @@ def main():
                         found_film_ids = json.dumps(
                             [film[0] for film in films_sorted])
 
-                        user_id = get_current_user_id(input_login)
+                        user_id = find_current_user_id(input_login)
 
                         add_log_search_query(
                             user_query, user_id, found_film_ids)
