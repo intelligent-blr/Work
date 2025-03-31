@@ -39,7 +39,9 @@ def find_documents(documents: List[Tuple[int, Set[str]]], stop_words:
 def films_rating(query_film_ids: List[str]) -> List[Tuple[int, int]]:
     film_ids = []
     for response in query_film_ids:
-        response_ids = [int(id) for id in response.strip('[]').split(', ')]
+        response_ids = [
+            int(id) for id in response.strip('[]').split(', ') if id.strip()
+        ]
         film_ids.extend(response_ids)
 
     film_counts = Counter(film_ids)

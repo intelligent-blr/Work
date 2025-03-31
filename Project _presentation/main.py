@@ -160,15 +160,16 @@ def main():
 
                     if not films:
                         print("Фильмы не найдены.")
+                        films_sorted = []
                     else:
                         films_sorted = sorted(
                             films, key=lambda x: x[1], reverse=True)
 
                     print("\nНайденные фильмы (id фильма, "
-                              "количество совпадений):")
+                          "количество совпадений):")
 
                     for film_id, match_count in films_sorted:
-                            print(f"ID: {film_id}, совпадения: {match_count}")
+                        print(f"ID: {film_id}, совпадения: {match_count}")
 
                     found_film_ids = json.dumps(
                         [film[0] for film in films_sorted])
@@ -184,13 +185,15 @@ def main():
                     if films_from_actor:
                         for _, film in films_from_actor:
                             print(film)
+                    else:
+                        print("Фильмы с данным актёром не найдены.")
                     # if films_from_actor:
                     #     print("\n".join(films_from_actor))
                     # else:
                     #     print("Фильмы с данным актёром не найдены")
 
                     found_film_ids = json.dumps(
-                        [film_id for film_id, _ in films_sorted])
+                        [film_id for film_id, _ in films_from_actor])
 
                     user_id = find_current_user_id(input_login)
 
