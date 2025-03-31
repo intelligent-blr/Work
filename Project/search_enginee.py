@@ -37,7 +37,7 @@ def find_documents(documents: list[tuple[int, str]], stop_words: list[str],
 # преобразуем данные и считаем количество одинаковых film_id, сортируем
 def films_rating(query_film_ids):
     film_ids = []
-    for response in list:
+    for response in query_film_ids:
         response_ids = [int(id) for id in response.strip('[]').split(', ')]
         film_ids.extend(response_ids)
 

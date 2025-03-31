@@ -8,24 +8,24 @@ from db_operations import (
     fetch_user_info,
     fetch_user_email,
     add_log_search_query,
-    # all_films_from_query,
+    find_films_from_film_id,
     all_query_users,
     all_query_one_user,
     get_current_user_id,
     find_films_from_actor,
+    all_films_from_query,
     change_user_information,
     fetch_table_rows,
     find_film_year_and_genre)
 
 from db_setup import (
-    # get_connection,
     create_database,
     database_is_exists)
 
 from search_enginee import (
     parse_stop_words,
     find_documents,
-    # films_rating,
+    films_rating,
     rating_query_users)
 
 import json
@@ -83,10 +83,10 @@ def main():
             else:
                 break
 
-    add_user_to_database(input_login, first_name, last_name, email)
+        add_user_to_database(input_login, first_name, last_name, email)
 
-    print(f"Регистрация прошла успешно! Добро пожаловать "
-          f"{first_name} {last_name}!")
+        print(f"Регистрация прошла успешно! Добро пожаловать "
+              f"{first_name} {last_name}!")
 
     while True:
         action = input("Выберите доступное действие:\n1 - Найти фильм\n"
@@ -97,7 +97,8 @@ def main():
             while True:
                 print("\nВарианты для поиска:\n1 - Найти фильмы по году "
                       "и жанру\n2 - Поиск фильма по ключевым словам"
-                      "\n3 - Поиск фильма по фамилии актера\n0 - Назад")
+                      "\n3 - Поиск фильма по фамилии актера"
+                      "\n4 - Поиск фильмов по популярности\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -173,6 +174,18 @@ def main():
                         print("\n".join(films_from_actor))
                     else:
                         print("Фильмы с данным актёром не найдены")
+
+                if choice == "4":
+                    query_film_ids = all_films_from_query()
+
+                    film_id_and_count = films_rating(query_film_ids)
+
+                    for film_id, count in film_id_and_count:
+                        film_titles = find_films_from_film_id(film_id)
+
+                        if film_titles:
+                            print(f"Название фильма: {film_titles[0]}, "
+                                  f"Количество совпадений: {count}")
 
         if action == "2":
             while True:

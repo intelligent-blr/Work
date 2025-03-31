@@ -1,41 +1,16 @@
-else:
-    while True:
-        # Проверка имени
-        first_name = input("Необходимо выполнить регистрацию. "
-                           "Введите, пожалуйста, ваше имя: ").title()
-        if not first_name:
-            print("Данное поле не может быть пустым.")
-            continue  # Если имя пустое, запрашиваем снова
+if choice == "4":
+    # Шаг 1: Получаем все film_id из запросов пользователей
+    query_film_ids = all_films_from_query()
 
-        # Проверка фамилии
-        last_name = input("Введите вашу фамилию: ").title()
-        if not last_name:
-            print("Данное поле не может быть пустым.")
-            continue  # Если фамилия пустая, запрашиваем снова
+    # Шаг 2: Подсчитываем количество каждого film_id
+    film_id_and_count = films_rating(query_film_ids)
 
-        # Проверка email
-        while True:
-            email = input("Последним шагом необходимо ввести email: ").strip()
+    # Шаг 3: Для каждого film_id выводим название фильма и количество совпадений
+    for film_id, count in film_id_and_count:
+        film_titles = find_films_from_film_id(film_id)
 
-            if not email:
-                print("Ошибка: Email не может быть пустым.")
-                continue  # Если email пустой, запрашиваем снова
-
-            email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-            if not re.match(email_pattern, email):
-                print("Ошибка: Некорректный email. Попробуйте снова.")
-                continue  # Заставляем ввести корректный email
-
-            if fetch_user_email(email):
-                print("Данный email уже зарегистрирован. Пожалуйста, введите другой.")
-                choice = input("Хотите ввести другой email? (да/нет): ").strip().lower()
-                if choice != "да":
-                    print("К сожалению, вы не выполнили регистрацию.")
-                    exit()
-            else:
-                break  # Email прошел все проверки, можно выходить из цикла
-
-        # Если все данные введены корректно, добавляем пользователя
-        add_user_to_database(input_login, first_name, last_name, email)
-        print(f"Регистрация прошла успешно! Добро пожаловать {first_name} {last_name}!")
-        break  # Прерываем основной цикл, так как регистрация завершена
+        if film_titles:  # Если фильм найден
+            print(f"Название фильма: {film_titles[0]}, "
+                  f"Количество совпадений: {count}")
+        else:
+            print(f"Фильм с ID {film_id} не найден.")

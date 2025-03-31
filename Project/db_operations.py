@@ -2,6 +2,8 @@ from db_setup import get_connection
 
 from config import my_base, find_base
 
+from collections import Counter
+
 
 # все документы формата (id, str-название+описание)
 def fetch_table_rows() -> list[tuple[int, str]]:
@@ -221,21 +223,6 @@ def get_current_user_id(login: str):
     return result[0] if result else None
 
 
-# выгружаем все film_id, найденные из запросов пользователей
-def all_films_from_query():
-    conn = get_connection(my_base)
-    cursor = conn.cursor()
-
-    query = "SELECT response FROM queries;"
-    cursor.execute(query)
-    responses = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return [response[0] for response in responses]
-
-
 # выгружаем все query пользователей для статистики
 def all_query_users():
     conn = get_connection(my_base)
@@ -291,3 +278,56 @@ def find_films_from_actor(last_name: str):
     conn.close()
 
     return [film[0] for film in query_actor]
+
+
+# выгружаем все film_id, найденные из запросов пользователей
+def all_films_from_query():
+    conn = get_connection(my_base)
+    cursor = conn.cursor()
+
+    query = "SELECT response FROM queries;"
+    cursor.execute(query)
+    responses = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [response[0] for response in responses]
+
+
+# находим фильм по film_id
+def find_films_from_film_id(film_id: int):
+    conn = get_connection(find_base, read_db=True)
+    cursor = conn.cursor()
+
+    query_film = """
+        SELECT f.title
+        FROM film f
+        WHERE film_id = %s;
+    """
+    cursor.execute(query_film, (film_id,))
+    query_film = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [film[0] for film in query_film]
+
+
+query_film_ids = all_films_from_query()
+for film_id in query_film_ids:
+    n = find_films_from_film_id(film_id)
+    print(n)
+
+
+def films_rating(query_film_ids):
+    film_ids = []
+    for response in query_film_ids:
+        response_ids = [int(id) for id in response.strip('[]').split(', ')]
+        film_ids.extend(response_ids)
+
+    film_counts = Counter(film_ids)
+    sorted_film_counts = film_counts.most_common()
+
+    for film_id, count in sorted_film_counts:
+        print(f"ID фильма: {film_id}, Количество совпадений: {count}")
