@@ -1,29 +1,30 @@
 from collections import Counter
+from typing import List, Set, Tuple
 
 
 # парсим слова введенные от пользователя - stop_words
 def parse_query_no_stop_words(user_query: str,
-                              stop_words: set[str]) -> set[str]:
+                              stop_words: Set[str]) -> Set[str]:
     user_query = set(user_query.lower().split())
     relevant_words = user_query.difference(stop_words)
     return relevant_words
 
 
 # количество вхождений слов из запроса пользователя и содержащихся в документе
-def match_document(document_words: set[str], query_words: set[str]) -> int:
+def match_document(document_words: Set[str], query_words: Set[str]) -> int:
     return len(document_words.intersection(query_words))
 
 
 # получение стоп-слов из файла
-def parse_stop_words(filename: str) -> set[str]:
+def parse_stop_words(filename: str) -> Set[str]:
     with open(filename, "r", encoding="utf-8") as file:
         stop_words = file.read().strip()
     return set(stop_words.lower().split(", "))
 
 
 # находим фильмы - -стоп слова и выводим с количеством совпадений
-def find_documents(documents: list[tuple[int, str]], stop_words: list[str],
-                   user_query: str) -> list[tuple[int, int]]:
+def find_documents(documents: List[Tuple[int, Set[str]]], stop_words:
+                   Set[str], user_query: str) -> List[Tuple[int, int]]:
     query_no_stop_words = parse_query_no_stop_words(user_query, stop_words)
     result = []
 
@@ -35,7 +36,7 @@ def find_documents(documents: list[tuple[int, str]], stop_words: list[str],
 
 
 # преобразуем данные и считаем количество одинаковых film_id, сортируем
-def films_rating(query_film_ids):
+def films_rating(query_film_ids: List[str]) -> List[Tuple[int, int]]:
     film_ids = []
     for response in query_film_ids:
         response_ids = [int(id) for id in response.strip('[]').split(', ')]
@@ -48,7 +49,7 @@ def films_rating(query_film_ids):
 
 
 # считаем повторения в запросах пользователей
-def rating_query_users(queries):
+def rating_query_users(queries: List[str]) -> None:
     query_counts = Counter(queries)
     sorted_queries = query_counts.most_common()
 

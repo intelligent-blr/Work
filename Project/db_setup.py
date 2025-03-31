@@ -9,9 +9,9 @@ def get_connection(db_name=None, read_db=False):
         conn_params = dbconfig_read.copy() if read_db else dbconfig_edit.copy()
         if db_name:
             conn_params['database'] = db_name
-        print(f"Подключение к базе данных: "
-              f"{conn_params.get('database', 'по умолчанию')}, "
-              f"status: {'read' if read_db else 'edit'}")
+        # print(f"Подключение к базе данных: "
+        #       f"{conn_params.get('database', 'по умолчанию')}, "
+        #       f"status: {'read' if read_db else 'edit'}")
         return mysql.connector.connect(**conn_params)
 
     except mysql.connector.Error as err:
@@ -20,7 +20,7 @@ def get_connection(db_name=None, read_db=False):
 
 
 # проверка на существование базы данных
-def database_is_exists(db_name, read_db=False):
+def database_is_exists(db_name: str) -> bool:
     conn = get_connection(db_name)
 
     if conn:
@@ -60,6 +60,7 @@ def create_database():
         print(f"База данных {my_base} успешно создана или уже существует.")
 
         cursor.execute(f"USE `{my_base}`")
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -89,6 +90,7 @@ def create_database():
 
     except mysql.connector.Error as err:
         print(f"Ошибка: {err}")
+
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
