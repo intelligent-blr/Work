@@ -72,7 +72,8 @@ def add_user_to_database(login: str, first_name: str,
         INSERT INTO users (login, first_name, last_name, email)
         VALUES (%s, %s, %s, %s);
     """
-    cursor.execute(insert_query, (login, first_name, last_name, email))
+    cursor.execute(
+        insert_query, (login, first_name, last_name, email))
     conn.commit()
 
     cursor.close()
@@ -267,3 +268,26 @@ def all_query_one_user(input_login):
     conn.close()
 
     return [query[0] for query in queries]
+
+
+# выгружаем все фильмы по фамилии актера
+def find_films_from_actor(last_name: str):
+    conn = get_connection(find_base, read_db=True)
+    cursor = conn.cursor()
+
+    query_actor = """
+        SELECT f.title
+        FROM film f
+        JOIN film_actor fa
+        ON f.film_id = fa.film_id
+        JOIN actor a
+        ON a.actor_id = fa.actor_id
+        WHERE a.last_name = %s;
+    """
+    cursor.execute(query_actor, (last_name,))
+    query_actor = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [film[0] for film in query_actor]

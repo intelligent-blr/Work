@@ -12,6 +12,7 @@ from db_operations import (
     all_query_users,
     all_query_one_user,
     get_current_user_id,
+    find_films_from_actor,
     change_user_information,
     fetch_table_rows,
     find_film_year_and_genre)
@@ -42,12 +43,34 @@ def main():
         print(f"Добро пожаловать {login_data['first_name']} "
               f"{login_data['last_name']}!")
     else:
-        first_name = input("Необходимо выполнить регистрацию. "
-                           "Введите, пожалуйста, ваше имя: ")
-        last_name = input("Введите вашу фамилию: ")
+        while True:
+            first_name = input("Необходимо выполнить регистрацию. "
+                               "Введите, пожалуйста, ваше имя: ").title()
+            if not first_name:
+                print("Данное поле не может быть пустым.")
+                continue
+            break
+
+        while True:
+            last_name = input("Введите вашу фамилию: ").title()
+            if not last_name:
+                print("Данное поле не может быть пустым.")
+                continue
+            break
 
         while True:
             email = input("Последним шагом необходимо ввести email: ")
+
+            if not email:
+                print("Ошибка: Email не может быть пустым.")
+                continue
+
+            email_pattern = r'^[a-zA-Z0-9_.+-]+' \
+                            r'@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+
+            if not re.match(email_pattern, email):
+                print("Ошибка: некорректный email.")
+                continue
 
             if fetch_user_email(email):
                 print("Данный email уже зарегистрирован. "
@@ -56,14 +79,14 @@ def main():
                     "Хотите ввести другой email? (да/нет): ").lower()
                 if choice != "да":
                     print("К сожалению, вы не выполнили регистрацию")
-                    return
+                    exit()
             else:
                 break
 
-        add_user_to_database(input_login, first_name, last_name, email)
+    add_user_to_database(input_login, first_name, last_name, email)
 
-        print(f"Регистрация прошла успешно! Добро пожаловать "
-              f"{first_name} {last_name}!")
+    print(f"Регистрация прошла успешно! Добро пожаловать "
+          f"{first_name} {last_name}!")
 
     while True:
         action = input("Выберите доступное действие:\n1 - Найти фильм\n"
@@ -74,8 +97,7 @@ def main():
             while True:
                 print("\nВарианты для поиска:\n1 - Найти фильмы по году "
                       "и жанру\n2 - Поиск фильма по ключевым словам"
-                      "\n3 - Вывести статистику по самым популярным "
-                      "запросам\n0 - Назад")
+                      "\n3 - Поиск фильма по фамилии актера\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -145,14 +167,19 @@ def main():
                             user_query, user_id, found_film_ids)
 
                 if choice == "3":
-                    queries = all_query_users()
-
-                    rating_query_users(queries)
+                    input_actor = input("Введите фамилию актёра: ").upper()
+                    films_from_actor = find_films_from_actor(input_actor)
+                    if films_from_actor:
+                        print("\n".join(films_from_actor))
+                    else:
+                        print("Фильмы с данным актёром не найдены")
 
         if action == "2":
             while True:
                 print("\nВарианты для поиска:\n1 - Ваша статистика "
-                      "\n2 - Статистика по всем пользователям\n0 - Назад")
+                      "\n2 - Статистика по всем пользователям"
+                      "\n3 - Вывести статистику по самым популярным "
+                      "запросам\n0 - Назад")
                 choice = input("Выберите вариант поиска: ")
 
                 if choice == "0":
@@ -170,6 +197,12 @@ def main():
 
                     print("\nСписок запросов всех пользователей:")
                     print("\n".join(statistics_all_users))
+
+                if choice == "3":
+
+                    queries = all_query_users()
+
+                    rating_query_users(queries)
 
         elif action == "3":
             while True:
