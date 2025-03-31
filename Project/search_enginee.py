@@ -44,8 +44,7 @@ def films_rating(query_film_ids):
     film_counts = Counter(film_ids)
     sorted_film_counts = film_counts.most_common()
 
-    for film_id, count in sorted_film_counts:
-        print(f"ID фильма: {film_id}, Количество совпадений: {count}")
+    return sorted_film_counts
 
 
 # считаем повторения в запросах пользователей

@@ -8,7 +8,7 @@ from db_operations import (
     fetch_user_info,
     fetch_user_email,
     add_log_search_query,
-    find_films_from_film_id,
+    find_all_films_and_film_id,
     all_query_users,
     all_query_one_user,
     get_current_user_id,
@@ -180,12 +180,12 @@ def main():
 
                     film_id_and_count = films_rating(query_film_ids)
 
-                    for film_id, count in film_id_and_count:
-                        film_titles = find_films_from_film_id(film_id)
+                    all_film_titles = find_all_films_and_film_id()
 
-                        if film_titles:
-                            print(f"Название фильма: {film_titles[0]}, "
-                                  f"Количество совпадений: {count}")
+                    for film_id, count in film_id_and_count:
+                        film_title = all_film_titles[film_id]
+                        print(f"Название фильма: {film_title}, "
+                              f"Количество совпадений: {count}")
 
         if action == "2":
             while True:

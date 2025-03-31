@@ -2,8 +2,6 @@ from db_setup import get_connection
 
 from config import my_base, find_base
 
-from collections import Counter
-
 
 # все документы формата (id, str-название+описание)
 def fetch_table_rows() -> list[tuple[int, str]]:
@@ -295,39 +293,16 @@ def all_films_from_query():
     return [response[0] for response in responses]
 
 
-# находим фильм по film_id
-def find_films_from_film_id(film_id: int):
+# находим фильм по film_id на взод ждет одно значение!
+def find_all_films_and_film_id():
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
 
-    query_film = """
-        SELECT f.title
-        FROM film f
-        WHERE film_id = %s;
-    """
-    cursor.execute(query_film, (film_id,))
-    query_film = cursor.fetchall()
+    all_id_and_film = "SELECT film_id, title FROM film;"
+    cursor.execute(all_id_and_film)
+    all_id_and_film = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return [film[0] for film in query_film]
-
-
-query_film_ids = all_films_from_query()
-for film_id in query_film_ids:
-    n = find_films_from_film_id(film_id)
-    print(n)
-
-
-def films_rating(query_film_ids):
-    film_ids = []
-    for response in query_film_ids:
-        response_ids = [int(id) for id in response.strip('[]').split(', ')]
-        film_ids.extend(response_ids)
-
-    film_counts = Counter(film_ids)
-    sorted_film_counts = film_counts.most_common()
-
-    for film_id, count in sorted_film_counts:
-        print(f"ID фильма: {film_id}, Количество совпадений: {count}")
+    return {film[0]: film[1] for film in all_id_and_film}
