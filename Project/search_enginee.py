@@ -1,4 +1,5 @@
 from collections import Counter
+
 from typing import List, Set, Tuple
 
 
@@ -39,7 +40,9 @@ def find_documents(documents: List[Tuple[int, Set[str]]], stop_words:
 def films_rating(query_film_ids: List[str]) -> List[Tuple[int, int]]:
     film_ids = []
     for response in query_film_ids:
-        response_ids = [int(id) for id in response.strip('[]').split(', ')]
+        response_ids = [
+            int(id) for id in response.strip('[]').split(', ') if id.strip()
+        ]
         film_ids.extend(response_ids)
 
     film_counts = Counter(film_ids)
@@ -54,4 +57,4 @@ def rating_query_users(queries: List[str]) -> None:
     sorted_queries = query_counts.most_common()
 
     for query, count in sorted_queries:
-        print(f"Запрос: {query}, Количество повторений: {count}")
+        print(f"Запрос: {query}, Повторения: {count}")

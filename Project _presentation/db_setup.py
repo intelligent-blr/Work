@@ -3,7 +3,6 @@ import mysql.connector
 from config import dbconfig_edit, dbconfig_read, my_base
 
 
-# подключение к базе данных
 def get_connection(db_name=None, read_db=False):
     try:
         conn_params = dbconfig_read.copy() if read_db else dbconfig_edit.copy()
@@ -19,7 +18,6 @@ def get_connection(db_name=None, read_db=False):
         return None
 
 
-# проверка на существование базы данных
 def database_is_exists(db_name: str) -> bool:
     conn = get_connection(db_name)
 
@@ -28,7 +26,6 @@ def database_is_exists(db_name: str) -> bool:
             cursor = conn.cursor()
             cursor.execute("SHOW DATABASES;")
             databases = [db[0] for db in cursor.fetchall()]
-            # print(databases)
 
             if db_name in databases:
                 print(f"База данных '{db_name}' существует.")
@@ -50,7 +47,6 @@ def database_is_exists(db_name: str) -> bool:
         return False
 
 
-# создание базы данных и таблиц
 def create_database():
     try:
         conn = get_connection()

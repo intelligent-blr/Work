@@ -105,6 +105,9 @@ def change_user_information(my_base: str, input_login: str,
         print(f"Ошибка: изменение поля '{field}' запрещено!")
         return
 
+    if field in {"first_name", "last_name"}:
+        new_value = new_value.title()
+
     conn = get_connection(my_base)
     cursor = conn.cursor()
 
@@ -115,8 +118,9 @@ def change_user_information(my_base: str, input_login: str,
     cursor.close()
     conn.close()
 
-    print(f"Данные по '{field}' успешно обновлены "
-          f"для пользователя {input_login}.")
+    print(f"\nДанные по '{field}' успешно обновлены для пользователя "
+          f"{new_value if field == 'login' else input_login}.")
+    return True
 
 
 # поиск фильмов по году и жанру
@@ -259,7 +263,7 @@ def find_films_from_actor(last_name: str) -> List[str]:
     cursor = conn.cursor()
 
     query_actor = """
-        SELECT f.title
+        SELECT f.film_id, f.title
         FROM film f
         JOIN film_actor fa ON f.film_id = fa.film_id
         JOIN actor a ON a.actor_id = fa.actor_id
@@ -271,7 +275,7 @@ def find_films_from_actor(last_name: str) -> List[str]:
     cursor.close()
     conn.close()
 
-    return [film[0] for film in query_actor]
+    return [(film[0], film[1]) for film in query_actor]
 
 
 # выгружаем все film_id, найденные из запросов пользователей
@@ -289,7 +293,7 @@ def all_films_from_query() -> List[int]:
     return [response[0] for response in responses]
 
 
-# находим фильм по film_id на взод ждет одно значение!
+# находим фильм по film_id
 def find_all_films_and_film_id() -> Dict[int, str]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()

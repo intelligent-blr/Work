@@ -5,7 +5,6 @@ from config import my_base, find_base
 from typing import List, Tuple, Optional, Dict
 
 
-# все документы формата (id, str-название+описание)
 def fetch_table_rows() -> list[tuple[int, str]]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
@@ -31,7 +30,6 @@ def fetch_table_rows() -> list[tuple[int, str]]:
     return documents
 
 
-# проверка существования login в системе
 def user_exists_in_database(input_login: str) -> bool:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -46,7 +44,6 @@ def user_exists_in_database(input_login: str) -> bool:
     return result is not None
 
 
-# поиск имени и фамилии в базе при существующем login
 def fetch_user_info(input_login: str) -> dict[str, str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -64,7 +61,6 @@ def fetch_user_info(input_login: str) -> dict[str, str]:
         raise ValueError("Пользователь не найден.")
 
 
-# добавление нового пользователя
 def add_user_to_database(login: str, first_name: str,
                          last_name: str, email: str) -> None:
     conn = get_connection(my_base)
@@ -82,7 +78,6 @@ def add_user_to_database(login: str, first_name: str,
     conn.close()
 
 
-# поиск существующего email
 def fetch_user_email(email: str) -> bool:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -97,7 +92,6 @@ def fetch_user_email(email: str) -> bool:
     return result is not None
 
 
-# изменение информации о пользователе
 def change_user_information(my_base: str, input_login: str,
                             field: str, new_value: str) -> None:
     permitted_fields = {"login", "first_name", "last_name", "email"}
@@ -123,7 +117,6 @@ def change_user_information(my_base: str, input_login: str,
     return True
 
 
-# поиск фильмов по году и жанру
 def find_film_year_and_genre(year: Optional[int],
                              genre: Optional[str]) -> List[Tuple[int, str]]:
     conn = get_connection(find_base, read_db=True)
@@ -155,7 +148,6 @@ def find_film_year_and_genre(year: Optional[int],
     return [(film[0], film[1]) for film in results]
 
 
-# ищем только по году
 def find_film_year(year: int) -> List[Tuple[int, str]]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
@@ -170,7 +162,6 @@ def find_film_year(year: int) -> List[Tuple[int, str]]:
     return films
 
 
-# ищем только по жанру
 def find_film_genre(genre: str) -> List[Tuple[int, str]]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
@@ -191,7 +182,6 @@ def find_film_genre(genre: str) -> List[Tuple[int, str]]:
     return films
 
 
-# записываем данные из запроса в таблицу
 def add_log_search_query(query: str, user_id: int,
                          found_film_ids: List[int]) -> None:
     conn = get_connection(my_base)
@@ -208,7 +198,6 @@ def add_log_search_query(query: str, user_id: int,
     conn.close()
 
 
-# поиск user_id в таблице users
 def find_current_user_id(login: str) -> Optional[int]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -223,7 +212,6 @@ def find_current_user_id(login: str) -> Optional[int]:
     return result[0] if result else None
 
 
-# выгружаем все query пользователей для статистики
 def all_query_users() -> List[str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -238,7 +226,6 @@ def all_query_users() -> List[str]:
     return [query[0] for query in queries]
 
 
-# выгружаем все query одного пользователя для статистики
 def all_query_one_user(input_login: str) -> List[str]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -257,7 +244,6 @@ def all_query_one_user(input_login: str) -> List[str]:
     return [query[0] for query in queries]
 
 
-# выгружаем все фильмы по фамилии актера
 def find_films_from_actor(last_name: str) -> List[str]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
@@ -278,7 +264,6 @@ def find_films_from_actor(last_name: str) -> List[str]:
     return [(film[0], film[1]) for film in query_actor]
 
 
-# выгружаем все film_id, найденные из запросов пользователей
 def all_films_from_query() -> List[int]:
     conn = get_connection(my_base)
     cursor = conn.cursor()
@@ -293,7 +278,6 @@ def all_films_from_query() -> List[int]:
     return [response[0] for response in responses]
 
 
-# находим фильм по film_id
 def find_all_films_and_film_id() -> Dict[int, str]:
     conn = get_connection(find_base, read_db=True)
     cursor = conn.cursor()
