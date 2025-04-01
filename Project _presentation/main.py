@@ -85,7 +85,7 @@ def main():
 
         add_user_to_database(input_login, first_name, last_name, email)
 
-        print(f"Регистрация прошла успешно! Добро пожаловать "
+        print(f"\nРегистрация прошла успешно! Добро пожаловать "
               f"{first_name} {last_name}!")
 
     while True:
@@ -151,7 +151,7 @@ def main():
                     break
 
                 if choice == "2":
-                    user_query = input("Введите описание фильма: ")
+                    user_query = input("Введите описание фильма: ").lower()
 
                     stop_words = parse_stop_words(file_dir)
                     documents = fetch_table_rows()
@@ -165,11 +165,14 @@ def main():
                         films_sorted = sorted(
                             films, key=lambda x: x[1], reverse=True)
 
-                    print("\nНайденные фильмы (id фильма, "
-                          "количество совпадений):")
+                    all_film_titles = find_all_films_and_film_id()
 
-                    for film_id, match_count in films_sorted:
-                        print(f"ID: {film_id}, совпадения: {match_count}")
+                    print("\nНайденные фильмы:")
+
+                    for film_id, count in films_sorted:
+                        film_title = all_film_titles[film_id]
+                        print(f"Название фильма: {film_title}, "
+                              f"Количество совпадений: {count}")
 
                     found_film_ids = json.dumps(
                         [film[0] for film in films_sorted])
@@ -187,10 +190,6 @@ def main():
                             print(film)
                     else:
                         print("Фильмы с данным актёром не найдены.")
-                    # if films_from_actor:
-                    #     print("\n".join(films_from_actor))
-                    # else:
-                    #     print("Фильмы с данным актёром не найдены")
 
                     found_film_ids = json.dumps(
                         [film_id for film_id, _ in films_from_actor])
@@ -212,8 +211,8 @@ def main():
         if action == "2":
             while True:
                 print("\nВарианты для поиска:\n"
-                      "\n1 - Ваша статистика "
-                      "\n2 - Статистика по всем пользователям"
+                      "\n1 - Ваши запросы"
+                      "\n2 - Все запросы пользователей"
                       "\n3 - Вывести статистику по самым популярным запросам"
                       "\n0 - Назад\n")
                 choice = input("Выберите вариант поиска: ")
@@ -295,10 +294,13 @@ def main():
                                   "Пожалуйста, введите другой")
                             continue
 
-                    change_user_information(my_base, input_login,
-                                            field_name, new_value)
+                    change = change_user_information(my_base, input_login,
+                                                     field_name, new_value)
 
-                    break
+                    if change:
+                        if field_name == "login":
+                            input_login = new_value
+                        break
 
         elif action == "0":
             print("Выход из программы.")

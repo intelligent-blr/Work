@@ -1,4 +1,5 @@
 from collections import Counter
+
 from typing import List, Set, Tuple
 
 
@@ -56,4 +57,4 @@ def rating_query_users(queries: List[str]) -> None:
     sorted_queries = query_counts.most_common()
 
     for query, count in sorted_queries:
-        print(f"Запрос: {query}, Количество повторений: {count}")
+        print(f"Запрос: {query}, Повторения: {count}")
